@@ -1,0 +1,188 @@
+a {
+    text-decoration: none;
+    color: #000000;
+}
+
+button {
+    box-shadow: none;
+    padding: 5px 15px;
+    background-color: #FFFFFF;
+}
+
+#header-logo-container {
+    display: inline-block;
+    float: left;
+    min-height: 39px;
+}
+
+#header-logo {
+    padding: 3px 0 0 3px;
+    display: block;
+}
+
+.header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.headerLinkContainer {
+    clear: both;
+}
+
+.headerNavContainer {
+    margin: 0;
+    padding: 0 0 0 20px;
+    float: left;
+}
+
+.headerNavContainer > a {
+    font-size: 1.4em;
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+.headerNavContainer > a:hover {
+    color: #777777;
+}
+
+.headerIconContainer {
+    margin: 0;
+    float: right;
+}
+
+.headerIcon {
+    color: #000000;
+    padding-right: 6px;
+}
+
+.headerIcon:hover {
+    color: #777777;
+}
+
+.content-container {
+    background-color: #FFFFFF;
+    position: relative;
+    top: 5em;
+    margin: 1em auto 8em auto;
+    width: 70%;
+    border-color: #000000;
+    border-style: solid;
+    border-width: 1px;
+    padding: 1em 2em 1em 2em;
+    max-width: 46em;
+}
+
+.post-title {
+    font-size: 3.5em;
+    padding: 0 0 10px 0;
+}
+
+.post-date {
+    font-style: italic;
+    float: right;
+}
+
+.navigation-buttons {
+    display: inline-block;
+    width: 100%;
+}
+
+.previous-post {
+    float: left;
+}
+
+.next-post {
+    float: right;
+}
+
+.content-title-edit-container {
+    text-align: center;
+}
+
+.content-title-edit {
+    font-size: 2.5em;
+    text-align: center;
+}
+
+.post-update-container {
+    border-color: #000000;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 10px 10px 7px 10px;
+    margin: 0 0 25px 0;
+}
+
+.post-update-date {
+    font-style: italic;
+}
+
+.tag-container {
+    display: inline-block;
+    width: 100%;
+}
+
+.tag-wrapper {
+    background-color: #000000;
+    border-radius: 4px;
+    padding: 3px 5px;
+    margin: 2px;
+    float: left;
+}
+
+.tag {
+    color: #FFFFFF;
+}
+
+.tag:hover {
+    color: #999999;
+}
+
+.tag-remove {
+    margin-left: 5px;
+}
+
+.add-tag-text {
+    margin: 7px 2px;
+}
+
+.post-action-container {
+    text-align: right;
+}
+
+.file-input {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.file-input + label:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.file-input:focus + label {
+    text-decoration: underline;
+}
+
+.file-action-icon {
+    padding-left: .3em;
+    cursor: pointer;
+}
+
+.file-action-icon:hover {
+    color: #FF0000;
+}
+
+.file-link-list-item:hover {
+    text-decoration: underline;
+}
+
+.failed-file-link {
+    color: #FF0000;
+}

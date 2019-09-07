@@ -1,0 +1,73 @@
+server:
+  port: 443
+  ssl:
+    enabled: true
+    key-store: /etc/keystore.p12
+    key-store-password:
+    keyStoreType: PKCS12
+    keyAlias: tomcat
+
+spring:
+  freemarker:
+    template-loader-path: classpath:/mindy_templates,classpath:/templates
+    suffix: .ftl
+  datasource:
+    platform: postgres
+    username: postgres
+    password: postgres
+  jpa.properties.hibernate:
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+    jdbc.lob.non_contextual_creation: true
+  servlet.multipart:
+    max-file-size: 10MB
+
+security:
+  oauth2:
+    client:
+      accessTokenUri: https://github.com/login/oauth/access_token
+      userAuthorizationUri: https://github.com/login/oauth/authorize
+      clientAuthenticationScheme: form
+    resource:
+      userInfoUri: https://api.github.com/user
+
+# In consumer, copy below (and overwrite any above as needed) into src/main/java/resources/application.yml
+# and enter project-specific information:
+#
+#  spring.jpa.properties.hibernate.default_schema: application
+#
+#  security.oauth2.client.clientId: x
+#
+#  objectStorage:
+#    imageBucket:
+#      name: images
+#      url: https://storage.fake.com
+#      region: nyc3
+#
+#  site:
+#    url: https://yoursite.com
+#    authorizedUsers: [user1,user2]
+
+# Static pages can be added by creating a markdown (.md) file in src/main/java/resources/static/markdown and
+# adding the filename without the extension as the key and title to display on the page as the value:
+#
+#  staticContent.markdownToName:
+#    projects: My Projects
+#    about: About
+
+# In production, copy below into production.yml in the root directory and enter secrets:
+#
+#  spring:
+#    datasource:
+#      url: x
+#      username: x
+#      password: x
+#
+#  security:
+#    oauth2:
+#      client:
+#        clientSecret: x
+#
+#  objectStorage:
+#    imageBucket:
+#      accessKeyId: x
+#      secretAccessKey: x
