@@ -1,4 +1,4 @@
-package net.eightlives.mindy.service;
+package net.eightlives.mindy.controller;
 
 import net.eightlives.mindy.config.ImageBucketConfig;
 import net.eightlives.mindy.model.ImageUploadResponse;
@@ -25,13 +25,13 @@ import static net.eightlives.mindy.model.ImageUploadResponse.ImageUploadResult;
 @RestController
 @CrossOrigin
 @RequestMapping("/content/image")
-public class ImageService {
+public class ImageController {
 
     private final ImageBucketConfig imageBucketConfig;
     private final S3Client uploadClient;
 
     @Autowired
-    public ImageService(ImageBucketConfig imageBucketConfig, S3Client uploadClient) {
+    public ImageController(ImageBucketConfig imageBucketConfig, S3Client uploadClient) {
         this.imageBucketConfig = imageBucketConfig;
         this.uploadClient = uploadClient;
     }
