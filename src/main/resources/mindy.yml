@@ -20,6 +20,8 @@ spring:
     jdbc.lob.non_contextual_creation: true
   servlet.multipart:
     max-file-size: 10MB
+  profiles.active: native
+  cloud.config.server.prefix: config
 
 security:
   oauth2:
@@ -29,6 +31,8 @@ security:
       clientAuthenticationScheme: form
     resource:
       userInfoUri: https://api.github.com/user
+
+management.endpoints.web.exposure.include: refresh
 
 # In consumer, copy below (and overwrite any above as needed) into src/main/java/resources/application.yml
 # and enter project-specific information:
@@ -43,9 +47,10 @@ security:
 #      url: https://storage.fake.com
 #      region: nyc3
 #
-#  site:
-#    url: https://yoursite.com
-#    authorizedUsers: [user1,user2]
+#  site.url: https://yoursite.com
+#
+#  userAuthorization.userPermissions:
+#    username: ADMIN, POST_ADD, POST_EDIT, POST_UPDATE
 
 # Static pages can be added by creating a markdown (.md) file in src/main/java/resources/static/markdown and
 # adding the filename without the extension as the key and title to display on the page as the value:
