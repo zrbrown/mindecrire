@@ -43,8 +43,7 @@ public class BlogController {
 
     @GetMapping
     public String latestBlog(Model model) {
-        Optional<Post> latestPost = postService.getLatestPost();
-        latestPost.ifPresent(post -> applyPostToModel(post, model, true, false));
+        postService.getLatestPost().ifPresent(post -> applyPostToModel(post, model, true, false));
 
         return "blog";
     }
@@ -104,7 +103,7 @@ public class BlogController {
     public String editPost(@PathVariable String postUrlName, Model model) {
         Optional<Post> post = postService.getPostByUrlName(postUrlName);
 
-        if (!post.isPresent()) {
+        if (post.isEmpty()) {
             return "redirect:/blog";
         }
 
@@ -124,7 +123,7 @@ public class BlogController {
     public String submitPostEdit(@PathVariable String postUrlName, FormBlogPost blogPost) {
         Optional<Post> postOptional = postService.getPostByUrlName(postUrlName);
 
-        if (!postOptional.isPresent()) {
+        if (postOptional.isEmpty()) {
             return "redirect:/blog/{postUrlName}";
         }
 
@@ -139,7 +138,7 @@ public class BlogController {
     public String updatePost(@PathVariable String postUrlName, Model model) {
         Optional<Post> post = postService.getPostByUrlName(postUrlName);
 
-        if (!post.isPresent()) {
+        if (post.isEmpty()) {
             return "redirect:/blog";
         }
 
@@ -157,7 +156,7 @@ public class BlogController {
     public String submitPostUpdate(@PathVariable String postUrlName, FormBlogPostUpdate blogPostUpdate) {
         Optional<Post> postOptional = postService.getPostByUrlName(postUrlName);
 
-        if (!postOptional.isPresent()) {
+        if (postOptional.isEmpty()) {
             return "redirect:/blog/{postUrlName}";
         }
 
