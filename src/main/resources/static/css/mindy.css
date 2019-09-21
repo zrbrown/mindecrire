@@ -84,6 +84,10 @@ button {
     float: right;
 }
 
+.post-author {
+    float: right;
+}
+
 .navigation-buttons {
     display: inline-block;
     width: 100%;

@@ -27,6 +27,8 @@
         </#list>
     </#if>
     <span class="post-date">${postDate!}</span>
+    <br/>
+    <span class="post-author">${postAuthor!}</span>
     <div>${postContent!}</div>
     <#if tags??>
         <#list tags>

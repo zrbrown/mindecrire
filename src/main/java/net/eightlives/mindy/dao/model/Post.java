@@ -32,19 +32,25 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     private Set<Tag> tags;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author")
+    private AuthorDetails authorDetails;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
     private Set<PostUpdate> postUpdates;
 
     public Post() {
     }
 
-    public Post(UUID id, String urlName, String title, String content, LocalDateTime createdDateTime, Set<Tag> tags) {
+    public Post(UUID id, String urlName, String title, String content, LocalDateTime createdDateTime, Set<Tag> tags,
+                AuthorDetails authorDetails) {
         this.id = id;
         this.urlName = urlName;
         this.title = title;
         this.content = content;
         this.createdDateTime = createdDateTime;
         this.tags = tags;
+        this.authorDetails = authorDetails;
     }
 
     public UUID getId() {
@@ -101,5 +107,13 @@ public class Post {
 
     public void setPostUpdates(Set<PostUpdate> postUpdates) {
         this.postUpdates = postUpdates;
+    }
+
+    public AuthorDetails getAuthorDetails() {
+        return authorDetails;
+    }
+
+    public void setAuthorDetails(AuthorDetails authorDetails) {
+        this.authorDetails = authorDetails;
     }
 }

@@ -11,6 +11,7 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/blog")
@@ -88,6 +88,7 @@ public class BlogController {
     private void renderPost(Model model, Post post, Set<String> tags) {
         model.addAttribute("postTitle", post.getTitle());
         model.addAttribute("postDate", post.getCreatedDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        model.addAttribute("postAuthor", post.getAuthorDetails().getDisplayName());
 
         Parser parser = Parser.builder().build();
         Node document = parser.parse(post.getContent());
@@ -177,9 +178,9 @@ public class BlogController {
     // TODO use RETHROW in production
     @PostMapping("/add")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.config.Permission).POST_ADD)")
-    public String submitPost(FormBlogPost blogPost) {
-        postService.addPost(UUID.randomUUID(), blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(),
-                blogPost.getAddedTags());
+    public String submitPost(FormBlogPost blogPost, OAuth2Authentication authentication) {
+        postService.addPost(blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(),
+                blogPost.getAddedTags(), authentication);
 
         return "redirect:/blog";
     }

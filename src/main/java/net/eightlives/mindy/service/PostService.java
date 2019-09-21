@@ -1,11 +1,14 @@
 package net.eightlives.mindy.service;
 
-import net.eightlives.mindy.dao.*;
+import net.eightlives.mindy.dao.PostRepository;
+import net.eightlives.mindy.dao.TagRepository;
+import net.eightlives.mindy.dao.model.AuthorDetails;
 import net.eightlives.mindy.dao.model.Post;
 import net.eightlives.mindy.dao.model.Tag;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -18,10 +21,13 @@ import java.util.stream.Collectors;
 @Component
 public class PostService {
 
+    private final AuthorDetailsService authorDetailsService;
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
 
-    public PostService(PostRepository postRepository, TagRepository tagRepository) {
+    public PostService(AuthorDetailsService authorDetailsService, PostRepository postRepository,
+                       TagRepository tagRepository) {
+        this.authorDetailsService = authorDetailsService;
         this.postRepository = postRepository;
         this.tagRepository = tagRepository;
     }
@@ -50,7 +56,10 @@ public class PostService {
                 .get().findFirst();
     }
 
-    public void addPost(UUID uuid, String title, String content, LocalDateTime addedDateTime, List<String> tags) {
+    public void addPost(String title, String content, LocalDateTime addedDateTime, List<String> tags,
+                        OAuth2Authentication authentication) {
+        AuthorDetails authorDetails = authorDetailsService.getOrCreateAuthorDetails(authentication);
+
         Set<Tag> addedTags = tags.stream().map(this::getOrAddTag).collect(Collectors.toSet());
 
         Post post = new Post(
@@ -59,7 +68,9 @@ public class PostService {
                 title,
                 content,
                 addedDateTime,
-                addedTags);
+                addedTags,
+                authorDetails
+        );
         postRepository.save(post);
     }
 
