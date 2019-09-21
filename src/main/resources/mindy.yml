@@ -76,3 +76,6 @@ management.endpoints.web.exposure.include: refresh
 #    imageBucket:
 #      accessKeyId: x
 #      secretAccessKey: x
+#
+#  spring.profiles.include:
+#    - ssl-redirect
