@@ -50,7 +50,7 @@ management.endpoints.web.exposure.include: refresh
 #  site.url: https://yoursite.com
 #
 #  userAuthorization.userPermissions:
-#    username: ADMIN, POST_ADD, POST_EDIT, POST_UPDATE
+#    username: ADMIN, POST_ADMIN, POST_ADD, POST_EDIT, POST_UPDATE
 
 # Static pages can be added by creating a markdown (.md) file in src/main/java/resources/static/markdown and
 # adding the filename without the extension as the key and title to display on the page as the value:
