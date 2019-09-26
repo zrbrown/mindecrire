@@ -3,13 +3,13 @@ package net.eightlives.mindy.controller;
 import net.eightlives.mindy.config.StaticContentConfig;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.AttributeProviderFactory;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -23,10 +23,13 @@ import java.util.stream.Stream;
 @Controller
 public class StaticContentController {
 
-    private StaticContentConfig staticContentConfig;
+    private final StaticContentConfig staticContentConfig;
+    private final AttributeProviderFactory attributeProviderFactory;
 
-    public StaticContentController(StaticContentConfig staticContentConfig) {
+    public StaticContentController(StaticContentConfig staticContentConfig,
+                                   AttributeProviderFactory attributeProviderFactory) {
         this.staticContentConfig = staticContentConfig;
+        this.attributeProviderFactory = attributeProviderFactory;
     }
 
     @GetMapping("/{markdown}")
@@ -41,7 +44,9 @@ public class StaticContentController {
 
                     Parser parser = Parser.builder().build();
                     Node document = parser.parse(content);
-                    HtmlRenderer renderer = HtmlRenderer.builder().build();
+                    HtmlRenderer renderer = HtmlRenderer.builder()
+                            .attributeProviderFactory(attributeProviderFactory)
+                            .build();
                     String renderedContent = renderer.render(document);
 
                     model.addAttribute("content", renderedContent);

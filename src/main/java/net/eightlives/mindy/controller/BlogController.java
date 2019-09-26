@@ -9,6 +9,7 @@ import net.eightlives.mindy.service.PostUpdateService;
 import net.eightlives.mindy.service.TagService;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.AttributeProviderFactory;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -32,13 +33,15 @@ public class BlogController {
     private final PostService postService;
     private final PostUpdateService postUpdateService;
     private final TagService tagService;
+    private final AttributeProviderFactory attributeProviderFactory;
 
     public BlogController(BaseConfig config, PostService postService, PostUpdateService postUpdateService,
-                          TagService tagService) {
+                          TagService tagService, AttributeProviderFactory attributeProviderFactory) {
         this.config = config;
         this.postService = postService;
         this.postUpdateService = postUpdateService;
         this.tagService = tagService;
+        this.attributeProviderFactory = attributeProviderFactory;
     }
 
     @GetMapping
@@ -91,7 +94,9 @@ public class BlogController {
 
         Parser parser = Parser.builder().build();
         Node document = parser.parse(post.getContent());
-        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        HtmlRenderer renderer = HtmlRenderer.builder().
+                attributeProviderFactory(attributeProviderFactory)
+                .build();
         String renderedContent = renderer.render(document);
         model.addAttribute("postContent", renderedContent);
 
