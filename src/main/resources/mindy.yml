@@ -11,6 +11,7 @@ spring:
   freemarker:
     template-loader-path: classpath:/mindy_templates,classpath:/templates
     suffix: .ftl
+    settings.template_exception_handler: rethrow
   datasource:
     platform: postgres
     username: postgres
