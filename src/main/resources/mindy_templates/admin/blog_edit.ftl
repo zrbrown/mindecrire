@@ -28,7 +28,8 @@
         </div>
         <br/>
         <textarea title="Post content" id="editor" name="postContent">${postContent!}</textarea>
-        <input id="addImageFileInput" class="file-input" title="Add Images" type="file" name="files[]" onchange="handleFileSelect(this)" multiple/>
+        <input id="addImageFileInput" class="file-input" title="Add Images" type="file" name="files[]"
+               onchange="handleFileSelect(this)" multiple/>
         <label for="addImageFileInput">Add Images</label>
         <ul id="uploadedImagesList" title="Uploaded Images">
         </ul>
@@ -36,12 +37,10 @@
         <button title="Add tag" type="button" onclick="addTagToTags()">Add tag</button>
         <div class="tag-container" id="tagContainer">
             <#if tags??>
-                <#list tags>
-                    <#items as tag>
-                        <div class="tag-wrapper">
-                            <span class="tag">${tag}</span><a href="" class="tag tag-remove">&#9447;</a>
-                        </div>
-                    </#items>
+                <#list tags as tag>
+                    <div class="tag-wrapper">
+                        <span class="tag">${tag}</span><a href="" class="tag tag-remove">&#9447;</a>
+                    </div>
                 </#list>
             </#if>
         </div>

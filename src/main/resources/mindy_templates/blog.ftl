@@ -18,13 +18,11 @@
 <div class="content-container">
     <div class="post-title">${postTitle!}</div>
     <#if postUpdates??>
-        <#list postUpdates>
-            <#items as postUpdate>
-                <div class="post-update-container">
-                    <span class="post-update-date">Updated ${postUpdate.date}</span>
-                    <div>${postUpdate.content}</div>
-                </div>
-            </#items>
+        <#list postUpdates as postUpdate>
+            <div class="post-update-container">
+                <span class="post-update-date">Updated ${postUpdate.date}</span>
+                <div>${postUpdate.content}</div>
+            </div>
         </#list>
     </#if>
     <span class="post-date">${postDate!}</span>
