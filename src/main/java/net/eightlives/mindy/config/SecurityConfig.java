@@ -18,9 +18,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/content/image/**").authenticated()
                 .antMatchers("/actuator/**").authenticated()
                 .antMatchers("/config/**").authenticated()
-                .anyRequest().permitAll()
-                .and()
-                .exceptionHandling().accessDeniedPage("/403");
+                .anyRequest().permitAll();
         // TODO is there a way to do this without ignoring CSRF?
         http.csrf()
                 .ignoringAntMatchers("/content/**")

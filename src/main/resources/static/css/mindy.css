@@ -190,3 +190,8 @@ button {
 .failed-file-link {
     color: #FF0000;
 }
+
+.error-title {
+    font-size: 2em;
+    text-align: center;
+}

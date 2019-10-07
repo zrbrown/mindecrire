@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>403 Forbidden</title>
+    <title>${errorMessage}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="/css/mindy.css">
@@ -16,7 +16,7 @@
 <#include "/common/header.ftl"/>
 
 <div class="content-container">
-    <h1>403 Forbidden</h1>
+    <div class="error-title">${errorMessage}</div>
 </div>
 
 </body>
