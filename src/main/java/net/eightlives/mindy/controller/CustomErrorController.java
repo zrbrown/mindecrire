@@ -1,4 +1,4 @@
-package net.eightlives.mindy.config;
+package net.eightlives.mindy.controller;
 
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;

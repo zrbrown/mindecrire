@@ -1,6 +1,6 @@
 package net.eightlives.mindy.controller;
 
-import net.eightlives.mindy.config.BaseConfig;
+import net.eightlives.mindy.config.custom.BaseConfig;
 import net.eightlives.mindy.dao.model.Post;
 import net.eightlives.mindy.model.FormBlogPost;
 import net.eightlives.mindy.model.FormBlogPostUpdate;
@@ -104,7 +104,7 @@ public class BlogController {
     }
 
     @GetMapping("/{postUrlName}/edit")
-    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.config.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindy.config.Permission).POST_EDIT)")
+    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindy.security.Permission).POST_EDIT)")
     public String editPost(@PathVariable String postUrlName, Model model) {
         Optional<Post> post = postService.getPostByUrlName(postUrlName);
 
@@ -124,7 +124,7 @@ public class BlogController {
     }
 
     @PostMapping("/{postUrlName}/edit")
-    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.config.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindy.config.Permission).POST_EDIT)")
+    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindy.security.Permission).POST_EDIT)")
     public String submitPostEdit(@PathVariable String postUrlName, FormBlogPost blogPost) {
         Optional<Post> postOptional = postService.getPostByUrlName(postUrlName);
 
@@ -139,7 +139,7 @@ public class BlogController {
     }
 
     @GetMapping("/{postUrlName}/update")
-    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.config.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindy.config.Permission).POST_UPDATE)")
+    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindy.security.Permission).POST_UPDATE)")
     public String updatePost(@PathVariable String postUrlName, Model model) {
         Optional<Post> post = postService.getPostByUrlName(postUrlName);
 
@@ -157,7 +157,7 @@ public class BlogController {
     }
 
     @PostMapping("/{postUrlName}/update")
-    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.config.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindy.config.Permission).POST_UPDATE)")
+    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindy.security.Permission).POST_UPDATE)")
     public String submitPostUpdate(@PathVariable String postUrlName, FormBlogPostUpdate blogPostUpdate) {
         Optional<Post> postOptional = postService.getPostByUrlName(postUrlName);
 
@@ -171,7 +171,7 @@ public class BlogController {
     }
 
     @GetMapping("/add")
-    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.config.Permission).POST_ADD)")
+    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).POST_ADD)")
     public String addPost(Model model) {
         model.addAttribute("submitPath", "/blog/add");
         model.addAttribute("ajaxBaseUrl", config.getUrl());
@@ -181,7 +181,7 @@ public class BlogController {
 
     // TODO use RETHROW in production
     @PostMapping("/add")
-    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.config.Permission).POST_ADD)")
+    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).POST_ADD)")
     public String submitPost(FormBlogPost blogPost, OAuth2Authentication authentication) {
         postService.addPost(blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(),
                 blogPost.getAddedTags(), authentication);

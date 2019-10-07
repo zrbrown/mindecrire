@@ -1,5 +1,6 @@
-package net.eightlives.mindy.config;
+package net.eightlives.mindy.config.custom;
 
+import net.eightlives.mindy.security.Permission;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

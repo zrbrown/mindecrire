@@ -1,4 +1,4 @@
-package net.eightlives.mindy.config;
+package net.eightlives.mindy.theme;
 
 import org.commonmark.node.*;
 import org.commonmark.renderer.html.AttributeProvider;

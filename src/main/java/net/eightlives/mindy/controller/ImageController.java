@@ -1,6 +1,6 @@
 package net.eightlives.mindy.controller;
 
-import net.eightlives.mindy.config.ImageBucketConfig;
+import net.eightlives.mindy.config.custom.ImageBucketConfig;
 import net.eightlives.mindy.model.ImageUploadResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

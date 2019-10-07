@@ -12,8 +12,12 @@ import java.lang.annotation.*;
 @Documented
 @ComponentScan(basePackages = {
         "net.eightlives.mindy.config",
+        "net.eightlives.mindy.config.custom",
         "net.eightlives.mindy.controller",
-        "net.eightlives.mindy.service"})
+        "net.eightlives.mindy.service",
+        "net.eightlives.mindy.endpointextension",
+        "net.eightlives.mindy.security",
+        "net.eightlives.mindy.theme"})
 @EntityScan(basePackages = {"net.eightlives.mindy.dao.model"})
 @EnableJpaRepositories(basePackages = {"net.eightlives.mindy.dao"})
 @EnableConfigServer

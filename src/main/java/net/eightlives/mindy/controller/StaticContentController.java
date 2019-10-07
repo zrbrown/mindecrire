@@ -1,6 +1,6 @@
 package net.eightlives.mindy.controller;
 
-import net.eightlives.mindy.config.StaticContentConfig;
+import net.eightlives.mindy.config.custom.StaticContentConfig;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.AttributeProviderFactory;

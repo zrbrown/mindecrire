@@ -1,5 +1,7 @@
-package net.eightlives.mindy.config;
+package net.eightlives.mindy.security;
 
+import net.eightlives.mindy.config.custom.UserAuthorizationConfig;
+import net.eightlives.mindy.security.Permission;
 import net.eightlives.mindy.service.PostService;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
