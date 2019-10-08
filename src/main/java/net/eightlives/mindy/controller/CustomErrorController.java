@@ -18,6 +18,11 @@ public class CustomErrorController implements ErrorController {
 
         try {
             if (status instanceof Integer) {
+                Object currentUri = request.getAttribute("currentUri");
+                if (currentUri != null && currentUri.toString().endsWith("/actuator/refresh") && (Integer) status == 405) {
+                    return "redirect:/refresh";
+                }
+
                 model.addAttribute("errorMessage", status.toString() + " " +
                         HttpStatus.valueOf((Integer) status).getReasonPhrase());
             } else {
