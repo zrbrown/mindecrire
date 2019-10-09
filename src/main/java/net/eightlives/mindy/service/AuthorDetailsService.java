@@ -1,5 +1,6 @@
 package net.eightlives.mindy.service;
 
+import lombok.extern.slf4j.Slf4j;
 import net.eightlives.mindy.dao.AuthorDetailsRepository;
 import net.eightlives.mindy.dao.model.AuthorDetails;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
+@Slf4j
 @Component
 public class AuthorDetailsService {
 
@@ -23,8 +25,8 @@ public class AuthorDetailsService {
                     try {
                         displayName = (String) ((HashMap) authentication.getUserAuthentication().getDetails()).get("name");
                     } catch (Exception e) {
+                        log.error("Error reading name from authentication object, using username instead for author " + authentication.getName(), e);
                         displayName = authentication.getName();
-                        // TODO log error
                     }
 
                     return authorDetailsRepository.save(new AuthorDetails(authentication.getName(), displayName));

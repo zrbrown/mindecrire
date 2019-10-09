@@ -1,5 +1,6 @@
 package net.eightlives.mindy.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import net.eightlives.mindy.config.custom.StaticContentConfig;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Controller
 public class StaticContentController {
 
@@ -51,8 +53,12 @@ public class StaticContentController {
 
                     model.addAttribute("content", renderedContent);
                 }
-            } catch (URISyntaxException | IOException e) {
-                //TODO handle
+            } catch (URISyntaxException e) {
+                log.error("Error while constructing path for markdown file " + "/static/markdown/" + markdown + ".md", e);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Page not found");
+            } catch (IOException e) {
+                log.error("Error while reading markdown file " + "/static/markdown/" + markdown + ".md", e);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error loading page");
             }
 
             model.addAttribute("title", staticContentConfig.getMarkdownToName().get(markdown));

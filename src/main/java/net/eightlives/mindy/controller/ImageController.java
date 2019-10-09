@@ -1,11 +1,13 @@
 package net.eightlives.mindy.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import net.eightlives.mindy.config.custom.ImageBucketConfig;
 import net.eightlives.mindy.model.ImageUploadResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
@@ -16,6 +18,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 
@@ -41,19 +45,34 @@ public class ImageController {
         ImageUploadResponse uploadResponse = new ImageUploadResponse();
 
         for (MultipartFile file : files) {
+            String path = imageBucketConfig.getUrl() + "/" + imageBucketConfig.getName() + "/" + file.getOriginalFilename();
+            int responseCode;
+
             try {
-                String path = imageBucketConfig.getUrl() + "/" + imageBucketConfig.getName() + "/" + file.getOriginalFilename();
                 URL url = new URL(path);
                 HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
+                responseCode = connection.getResponseCode();
+            } catch (MalformedURLException e) {
+                log.error("Invalid image upload URL. Configuration is likely incorrect. URL: " + path, e);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid image upload URL. Configuration is likely incorrect.");
+            } catch (ProtocolException e) {
+                log.error("Error while setting up image upload connection.", e);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while setting up image upload connection");
+            } catch (IOException e) {
+                log.error("Error connecting to image upload server.", e);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error connecting to image upload server");
+            }
 
-                if (connection.getResponseCode() == 403) {
-                    PutObjectRequest request = PutObjectRequest.builder()
-                            .bucket(imageBucketConfig.getName())
-                            .key(file.getOriginalFilename())
-                            .contentType(file.getContentType())
-                            .acl("public-read")
-                            .build();
+            if (responseCode == HttpStatus.FORBIDDEN.value()) {
+                PutObjectRequest request = PutObjectRequest.builder()
+                        .bucket(imageBucketConfig.getName())
+                        .key(file.getOriginalFilename())
+                        .contentType(file.getContentType())
+                        .acl("public-read")
+                        .build();
+
+                try {
                     RequestBody body = RequestBody.fromInputStream(file.getInputStream(), file.getSize());
 
                     PutObjectResponse response = uploadClient.putObject(request, body);
@@ -65,12 +84,14 @@ public class ImageController {
                         uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(),
                                 response.sdkHttpResponse().statusCode() + " " + response.sdkHttpResponse().statusText()));
                     }
-                } else {
+                } catch (IOException e) {
+                    log.error("Error reading file to upload", e);
                     uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(),
-                            "File " + file.getOriginalFilename() + " already exists"));
+                            "File " + file.getOriginalFilename() + " could not be read. Try Again."));
                 }
-            } catch (IOException e) {
-                log.error("Error reading file", e);
+            } else {
+                uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(),
+                        "File " + file.getOriginalFilename() + " already exists"));
             }
         }
 
