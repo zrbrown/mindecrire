@@ -121,7 +121,7 @@ public class BlogController {
         Set<String> tags = tagService.getTags(post.get());
         model.addAttribute("tags", tags);
 
-        return "admin/blog_edit";
+        return "blog_actions/blog_edit";
     }
 
     @PostMapping("/{postUrlName}/edit")
@@ -154,7 +154,7 @@ public class BlogController {
 
         model.addAttribute("submitPath", "/blog/" + postUrlName + "/update");
 
-        return "admin/blog_update";
+        return "blog_actions/blog_update";
     }
 
     @PostMapping("/{postUrlName}/update")
@@ -177,7 +177,7 @@ public class BlogController {
         model.addAttribute("submitPath", "/blog/add");
         model.addAttribute("ajaxBaseUrl", config.getUrl());
 
-        return "admin/blog_edit";
+        return "blog_actions/blog_edit";
     }
 
     @PostMapping("/add")
@@ -194,7 +194,7 @@ public class BlogController {
             model.addAttribute("ajaxBaseUrl", config.getUrl());
             model.addAttribute("validationMessage", "A post with this title already exists. Use a different title.");
 
-            return "admin/blog_edit";
+            return "blog_actions/blog_edit";
         }
 
         return "redirect:/blog";
