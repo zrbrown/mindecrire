@@ -61,6 +61,11 @@ button {
     color: #777777;
 }
 
+.validation-text {
+    color: #FF0000;
+    padding: 7px;
+}
+
 .content-container {
     background-color: #FFFFFF;
     position: relative;

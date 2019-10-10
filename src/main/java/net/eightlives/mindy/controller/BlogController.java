@@ -2,6 +2,7 @@ package net.eightlives.mindy.controller;
 
 import net.eightlives.mindy.config.custom.BaseConfig;
 import net.eightlives.mindy.dao.model.Post;
+import net.eightlives.mindy.exception.DuplicatePostUrlNameException;
 import net.eightlives.mindy.model.FormBlogPost;
 import net.eightlives.mindy.model.FormBlogPostUpdate;
 import net.eightlives.mindy.service.PostService;
@@ -181,9 +182,20 @@ public class BlogController {
 
     @PostMapping("/add")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).POST_ADD)")
-    public String submitPost(FormBlogPost blogPost, OAuth2Authentication authentication) {
-        postService.addPost(blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(),
-                blogPost.getAddedTags(), authentication);
+    public String submitPost(FormBlogPost blogPost, OAuth2Authentication authentication, Model model) {
+        try {
+            postService.addPost(blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(),
+                    blogPost.getAddedTags(), authentication);
+        } catch (DuplicatePostUrlNameException e) {
+            model.addAttribute("postTitle", blogPost.getPostTitle());
+            model.addAttribute("postContent", blogPost.getPostContent());
+            model.addAttribute("tags", blogPost.getAddedTags());
+            model.addAttribute("submitPath", "/blog/add");
+            model.addAttribute("ajaxBaseUrl", config.getUrl());
+            model.addAttribute("validationMessage", "A post with this title already exists. Use a different title.");
+
+            return "admin/blog_edit";
+        }
 
         return "redirect:/blog";
     }

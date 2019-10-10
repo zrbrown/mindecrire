@@ -24,6 +24,7 @@
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
         <div class="content-title-edit-container">
+            <div class="validation-text">${validationMessage!}</div>
             <input title="Post title" type="text" class="content-title-edit" name="postTitle" value="${postTitle!}"/>
         </div>
         <br/>

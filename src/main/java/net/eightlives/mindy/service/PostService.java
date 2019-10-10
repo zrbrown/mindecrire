@@ -5,6 +5,7 @@ import net.eightlives.mindy.dao.TagRepository;
 import net.eightlives.mindy.dao.model.AuthorDetails;
 import net.eightlives.mindy.dao.model.Post;
 import net.eightlives.mindy.dao.model.Tag;
+import net.eightlives.mindy.exception.DuplicatePostUrlNameException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -58,13 +59,18 @@ public class PostService {
 
     public void addPost(String title, String content, LocalDateTime addedDateTime, List<String> tags,
                         OAuth2Authentication authentication) {
+        String urlName = title.replaceAll("\\s", "-");
+        if (postRepository.getByUrlName(urlName).isPresent()) {
+            throw new DuplicatePostUrlNameException();
+        }
+
         AuthorDetails authorDetails = authorDetailsService.getOrCreateAuthorDetails(authentication);
 
         Set<Tag> addedTags = tags.stream().map(this::getOrAddTag).collect(Collectors.toSet());
 
         Post post = new Post(
                 UUID.randomUUID(),
-                title.replaceAll("\\s", "-"),
+                urlName,
                 title,
                 content,
                 addedDateTime,
