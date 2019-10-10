@@ -179,7 +179,6 @@ public class BlogController {
         return "admin/blog_edit";
     }
 
-    // TODO use RETHROW in production
     @PostMapping("/add")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).POST_ADD)")
     public String submitPost(FormBlogPost blogPost, OAuth2Authentication authentication) {
