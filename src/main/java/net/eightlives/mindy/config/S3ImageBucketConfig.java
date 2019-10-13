@@ -1,7 +1,6 @@
 package net.eightlives.mindy.config;
 
 import net.eightlives.mindy.config.custom.ImageBucketConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -16,7 +15,6 @@ public class S3ImageBucketConfig {
 
     private final ImageBucketConfig imageBucketConfig;
 
-    @Autowired
     public S3ImageBucketConfig(ImageBucketConfig imageBucketConfig) {
         this.imageBucketConfig = imageBucketConfig;
     }

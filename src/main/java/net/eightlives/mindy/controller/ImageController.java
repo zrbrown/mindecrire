@@ -3,7 +3,6 @@ package net.eightlives.mindy.controller;
 import lombok.extern.slf4j.Slf4j;
 import net.eightlives.mindy.config.custom.ImageBucketConfig;
 import net.eightlives.mindy.model.ImageUploadResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +33,6 @@ public class ImageController {
     private final ImageBucketConfig imageBucketConfig;
     private final S3Client uploadClient;
 
-    @Autowired
     public ImageController(ImageBucketConfig imageBucketConfig, S3Client uploadClient) {
         this.imageBucketConfig = imageBucketConfig;
         this.uploadClient = uploadClient;
