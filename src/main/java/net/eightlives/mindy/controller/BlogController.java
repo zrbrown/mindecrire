@@ -190,6 +190,7 @@ public class BlogController {
             model.addAttribute("postTitle", blogPost.getPostTitle());
             model.addAttribute("postContent", blogPost.getPostContent());
             model.addAttribute("tags", blogPost.getAddedTags());
+            model.addAttribute("resubmit", true);
             model.addAttribute("submitPath", "/blog/add");
             model.addAttribute("ajaxBaseUrl", config.getUrl());
             model.addAttribute("validationMessage", "A post with this title already exists. Use a different title.");

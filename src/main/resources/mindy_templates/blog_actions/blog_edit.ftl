@@ -42,6 +42,9 @@
                 <#list tags as tag>
                     <div class="tag-wrapper">
                         <span class="tag">${tag}</span><a href="" class="tag tag-remove">&#9447;</a>
+                        <#if resubmit??>
+                            <input type="hidden" name="addedTags" value="${tag}"/>
+                        </#if>
                     </div>
                 </#list>
             </#if>
