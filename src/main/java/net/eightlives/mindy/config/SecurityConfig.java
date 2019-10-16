@@ -19,7 +19,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/actuator/**").authenticated()
                 .antMatchers("/config/**").authenticated()
                 .anyRequest().permitAll();
-        // TODO is there a way to do this without ignoring CSRF?
         http.csrf()
                 .ignoringAntMatchers("/actuator/**");
     }
