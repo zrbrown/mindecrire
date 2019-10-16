@@ -42,7 +42,7 @@ const deleteImageAjax = axios.create({
 
 let uploadedImagesList = document.getElementById("uploadedImagesList");
 
-function handleFileSelect(target) {
+function handleFileSelect(target, csrfName, csrfHeaderName, csrfToken) {
     let files = target.files;
 
     let formData = new FormData();
@@ -55,7 +55,7 @@ function handleFileSelect(target) {
         formData.append("files", file, filename);
     }
 
-    uploadImages(formData, filenamesToFiles)
+    uploadImages(formData, filenamesToFiles, csrfName, csrfHeaderName, csrfToken)
 }
 
 function handleCopyLinkClicked(target) {
@@ -69,7 +69,7 @@ function handleCancelFailedImageClicked(listItem) {
     uploadedImagesList.removeChild(listItem.parentElement);
 }
 
-function handleRetryImageUploadClicked(listItem, file, filename) {
+function handleRetryImageUploadClicked(listItem, file, filename, csrfName, csrfHeaderName, csrfToken) {
     uploadedImagesList.removeChild(listItem);
 
     let formData = new FormData();
@@ -77,29 +77,35 @@ function handleRetryImageUploadClicked(listItem, file, filename) {
 
     let filenamesToFiles = {};
     filenamesToFiles[filename] = file;
-    uploadImages(formData, filenamesToFiles);
+    uploadImages(formData, filenamesToFiles, csrfName, csrfHeaderName, csrfToken);
 }
 
-function handleDeleteUploadedImageClicked(listItem, filename) {
+function handleDeleteUploadedImageClicked(listItem, filename, csrfHeaderName, csrfToken) {
     uploadedImagesList.removeChild(listItem);
 
-    deleteImageAjax.delete("/content/image/delete/" + filename)
+    let options = {headers: {}};
+    options.headers[csrfHeaderName] = csrfToken;
+
+    deleteImageAjax.delete("/content/image/delete/" + filename, options)
         .catch(error => {
             uploadedImagesList.appendChild(listItem);
         });
 }
 
-function uploadImages(formData, filenamesToFiles) {
+function uploadImages(formData, filenamesToFiles, csrfName, csrfHeaderName, csrfToken) {
+    formData.append(csrfName, csrfToken);
+
     uploadImageAjax.post("/content/image/add", formData)
         .then(response => {
             for (let i = 0; i < response.data.successful.length; i++) {
-                let successListItem = createSuccessfulUploadListItem(response.data.successful[i]);
+                let successListItem = createSuccessfulUploadListItem(response.data.successful[i],
+                    csrfHeaderName, csrfToken);
                 uploadedImagesList.appendChild(successListItem);
             }
 
             for (let i = 0; i < response.data.failed.length; i++) {
                 let failedListItem = createFailedUploadListItem(response.data.failed[i],
-                    filenamesToFiles[response.data.failed[i].filename]);
+                    filenamesToFiles[response.data.failed[i].filename], csrfName, csrfHeaderName, csrfToken);
                 uploadedImagesList.appendChild(failedListItem);
             }
         })
@@ -108,7 +114,7 @@ function uploadImages(formData, filenamesToFiles) {
         });
 }
 
-function createSuccessfulUploadListItem(successfulUpload) {
+function createSuccessfulUploadListItem(successfulUpload, csrfHeaderName, csrfToken) {
     let uploadedImageListItem = document.createElement("li");
     uploadedImageListItem.setAttribute("class", "file-link-list-item");
 
@@ -120,13 +126,15 @@ function createSuccessfulUploadListItem(successfulUpload) {
     let deleteLink = createLink("Delete", "fa fa-trash file-action-icon",
         () => handleDeleteUploadedImageClicked(
             uploadedImageListItem,
-            successfulUpload.filename));
+            successfulUpload.filename,
+            csrfHeaderName,
+            csrfToken));
     uploadedImageListItem.appendChild(deleteLink);
 
     return uploadedImageListItem;
 }
 
-function createFailedUploadListItem(failedUpload, failedUploadFile) {
+function createFailedUploadListItem(failedUpload, failedUploadFile, csrfName, csrfHeaderName, csrfToken) {
     let failedImageListItem = document.createElement("li");
     failedImageListItem.setAttribute("class", "file-link-list-item");
 
@@ -143,7 +151,10 @@ function createFailedUploadListItem(failedUpload, failedUploadFile) {
             () => handleRetryImageUploadClicked(
                 failedImageListItem,
                 failedUploadFile,
-                failedUpload.filename));
+                failedUpload.filename,
+                csrfName,
+                csrfHeaderName,
+                csrfToken));
         failedImageListItem.appendChild(retryLink);
     }
 

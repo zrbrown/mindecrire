@@ -30,7 +30,8 @@
         <br/>
         <textarea title="Post content" id="editor" name="postContent">${postContent!}</textarea>
         <input id="addImageFileInput" class="file-input" title="Add Images" type="file" name="files[]"
-               onchange="handleFileSelect(this)" multiple/>
+               onchange="handleFileSelect(this, '${_csrf.parameterName}', '${_csrf.headerName}', '${_csrf.token}')"
+               multiple/>
         <label for="addImageFileInput">Add Images</label>
         <ul id="uploadedImagesList" title="Uploaded Images">
         </ul>
