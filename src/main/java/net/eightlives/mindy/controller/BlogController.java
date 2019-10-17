@@ -46,10 +46,8 @@ public class BlogController {
     }
 
     @GetMapping
-    public String latestBlog(Model model) {
-        postService.getLatestPost().ifPresent(post -> applyPostToModel(post, model, true, false));
-
-        return "blog";
+    public String latestBlog() {
+        return  postService.getLatestPost().map(post -> "redirect:/blog/" + post.getUrlName()).orElse("blog");
     }
 
     @GetMapping("/{postUrlName}")
