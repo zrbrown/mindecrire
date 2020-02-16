@@ -21,26 +21,21 @@ spring:
     jdbc.lob.non_contextual_creation: true
   servlet.multipart:
     max-file-size: 10MB
+  security.oauth2.client.registration:
+    github.provider: github
+
   profiles.active: native
   cloud.config.server.prefix: config
 
-security:
-  oauth2:
-    client:
-      accessTokenUri: https://github.com/login/oauth/access_token
-      userAuthorizationUri: https://github.com/login/oauth/authorize
-      clientAuthenticationScheme: form
-    resource:
-      userInfoUri: https://api.github.com/user
 
 management.endpoints.web.exposure.include: refresh
 
 # In consumer, copy below (and overwrite any above as needed) into src/main/java/resources/application.yml
 # and enter project-specific information:
 #
-#  spring.jpa.properties.hibernate.default_schema: application
-#
-#  security.oauth2.client.clientId: x
+#  spring:
+#    spring.jpa.properties.hibernate.default_schema: application
+#    security.oauth2.client.registration.github.client-id: x
 #
 #  objectStorage:
 #    imageBucket:
@@ -67,11 +62,7 @@ management.endpoints.web.exposure.include: refresh
 #      url: x
 #      username: x
 #      password: x
-#
-#  security:
-#    oauth2:
-#      client:
-#        clientSecret: x
+#    security.oauth2.client.registration.github.client-secret: x
 #
 #  objectStorage:
 #    imageBucket:

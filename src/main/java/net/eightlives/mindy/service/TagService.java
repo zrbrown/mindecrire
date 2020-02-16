@@ -19,7 +19,7 @@ public class TagService {
     }
 
     public Set<String> getTags(Post post) {
-        return tagRepository.getAllByPosts(Collections.singleton(post)).stream()
+        return tagRepository.getAllByPostsIn(Collections.singleton(post)).stream()
                 .map(Tag::getName)
                 .collect(Collectors.toSet());
     }

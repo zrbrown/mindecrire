@@ -1,10 +1,10 @@
 package net.eightlives.mindy.security;
 
 import net.eightlives.mindy.config.custom.UserAuthorizationConfig;
-import net.eightlives.mindy.security.Permission;
 import net.eightlives.mindy.service.PostService;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -24,18 +24,24 @@ public class UserAuthorizationPermissionEvaluator implements PermissionEvaluator
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        boolean hasPermission = hasPermission(authentication, (Permission) permission);
+        String username = ((OAuth2AuthenticatedPrincipal) authentication.getPrincipal()).getAttribute("login");
+
+        if (username == null) {
+            return false;
+        }
+
+        boolean hasPermission = hasPermission(username, (Permission) permission);
 
         if (targetDomainObject instanceof String) {
-            hasPermission = hasPermission && ownsPost((String) targetDomainObject, authentication.getName());
+            hasPermission = hasPermission && ownsPost((String) targetDomainObject, username);
         }
 
         return hasPermission;
     }
 
-    private boolean hasPermission(Authentication authentication, Permission permission) {
+    private boolean hasPermission(String username, Permission permission) {
         return userAuthorizationConfig.getUserPermissions()
-                .getOrDefault(authentication.getName(), Collections.emptyList())
+                .getOrDefault(username, Collections.emptyList())
                 .contains(permission);
     }
 

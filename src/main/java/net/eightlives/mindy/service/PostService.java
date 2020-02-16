@@ -9,7 +9,7 @@ import net.eightlives.mindy.exception.DuplicatePostUrlNameException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -58,7 +58,7 @@ public class PostService {
     }
 
     public void addPost(String title, String content, LocalDateTime addedDateTime, List<String> tags,
-                        OAuth2Authentication authentication) {
+                        OAuth2AuthenticationToken authentication) {
         String urlName = title.replaceAll("\\s", "-");
         if (postRepository.getByUrlName(urlName).isPresent()) {
             throw new DuplicatePostUrlNameException();

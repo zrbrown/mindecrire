@@ -13,7 +13,7 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.AttributeProviderFactory;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -180,7 +180,7 @@ public class BlogController {
 
     @PostMapping("/add")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).POST_ADD)")
-    public String submitPost(FormBlogPost blogPost, OAuth2Authentication authentication, Model model) {
+    public String submitPost(FormBlogPost blogPost, OAuth2AuthenticationToken authentication, Model model) {
         try {
             postService.addPost(blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(),
                     blogPost.getAddedTags(), authentication);
