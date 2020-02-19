@@ -2,7 +2,7 @@ server:
   port: 443
   ssl:
     enabled: true
-    key-store: /etc/keystore.p12
+    key-store: /etc/mindy/ssl/keystore.p12
     key-store-password:
     keyStoreType: PKCS12
     keyAlias: tomcat
@@ -28,6 +28,9 @@ spring:
 
 friendlyssl:
   certificate-friendly-name: mindy
+  account-private-key-file: /etc/mindy/ssl/account.pem
+  keystore-file: /etc/mindy/ssl/keystore.p12
+  terms-of-service-file: /etc/mindy/ssl/tos
 
 management.endpoints.web.exposure.include: refresh
 
