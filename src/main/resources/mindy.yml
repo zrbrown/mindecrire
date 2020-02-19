@@ -26,7 +26,7 @@ spring:
   profiles.active: native
   cloud.config.server.prefix: config
 
-friendlyssl:
+friendly-ssl:
   certificate-friendly-name: mindy
   account-private-key-file: /etc/mindy/ssl/account.pem
   keystore-file: /etc/mindy/ssl/keystore.p12
