@@ -1,5 +1,6 @@
 package net.eightlives.mindy.annotation;
 
+import net.eightlives.friendlyssl.annotation.FriendlySSL;
 import net.eightlives.mindy.config.AuthorizationConfig;
 import net.eightlives.mindy.config.S3ImageBucketConfig;
 import net.eightlives.mindy.config.SecurityConfig;
@@ -52,5 +53,6 @@ import java.lang.annotation.*;
 @EntityScan(basePackages = {"net.eightlives.mindy.dao.model"})
 @EnableJpaRepositories(basePackages = {"net.eightlives.mindy.dao"})
 @EnableConfigServer
+@FriendlySSL
 public @interface MindyApp {
 }

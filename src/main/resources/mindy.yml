@@ -23,10 +23,11 @@ spring:
     max-file-size: 10MB
   security.oauth2.client.registration:
     github.provider: github
-
   profiles.active: native
   cloud.config.server.prefix: config
 
+friendlyssl:
+  certificate-friendly-name: mindy
 
 management.endpoints.web.exposure.include: refresh
 
