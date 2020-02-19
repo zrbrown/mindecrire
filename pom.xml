@@ -67,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>net.eightlives</groupId>
-            <artifactId>friendly-boot-ssl</artifactId>
+            <artifactId>friendly-ssl</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <!-- provided -->
