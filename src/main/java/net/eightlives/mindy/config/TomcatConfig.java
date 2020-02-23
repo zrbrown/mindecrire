@@ -19,11 +19,18 @@ public class TomcatConfig {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
             @Override
             protected void postProcessContext(Context context) {
+                SecurityConstraint acmeConstraint = new SecurityConstraint();
+                acmeConstraint.setUserConstraint("NONE");
+                SecurityCollection acmeCollection = new SecurityCollection();
+                acmeCollection.addPattern("/.well-known/acme-challenge/*");
+                acmeConstraint.addCollection(acmeCollection);
+                context.addConstraint(acmeConstraint);
+
                 SecurityConstraint securityConstraint = new SecurityConstraint();
                 securityConstraint.setUserConstraint("CONFIDENTIAL");
-                SecurityCollection collection = new SecurityCollection();
-                collection.addPattern("/*");
-                securityConstraint.addCollection(collection);
+                SecurityCollection securityCollection = new SecurityCollection();
+                securityCollection.addPattern("/*");
+                securityConstraint.addCollection(securityCollection);
                 context.addConstraint(securityConstraint);
             }
         };

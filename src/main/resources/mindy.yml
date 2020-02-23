@@ -5,7 +5,7 @@ server:
     key-store: /etc/mindy/ssl/keystore.p12
     key-store-password:
     keyStoreType: PKCS12
-    keyAlias: tomcat
+    keyAlias: mindy
 
 spring:
   freemarker:
