@@ -6,7 +6,7 @@
         <div class="headerNavContainer">
             <a href="/blog" title="Blog">Blog</a>
             <#list navLinks as navLink>
-                <a href="${navLink[0]}" title="${navLink[1]}">Projects</a>
+                <a href="${navLink[0]}" title="${navLink[1]}">${navLink[1]}</a>
             </#list>
         </div>
         <div class="headerIconContainer">
