@@ -33,7 +33,7 @@ public class UserAuthorizationPermissionEvaluator implements PermissionEvaluator
         boolean hasPermission = hasPermission(username, (Permission) permission);
 
         if (targetDomainObject instanceof String) {
-            hasPermission = hasPermission && ownsPost((String) targetDomainObject, username);
+            hasPermission = hasPermission && ownsPost(targetDomainObject, username);
         }
 
         return hasPermission;

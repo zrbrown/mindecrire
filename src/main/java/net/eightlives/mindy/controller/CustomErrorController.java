@@ -22,7 +22,7 @@ public class CustomErrorController implements ErrorController {
             if (status instanceof Integer) {
                 Object currentUri = request.getAttribute("currentUri");
                 if (currentUri != null && currentUri.toString().endsWith("/actuator/refresh") &&
-                        (Integer) status == HttpStatus.METHOD_NOT_ALLOWED.value()) {
+                        status == HttpStatus.METHOD_NOT_ALLOWED.value()) {
                     return "redirect:/refresh";
                 }
 
