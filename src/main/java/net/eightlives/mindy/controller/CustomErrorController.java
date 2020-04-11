@@ -19,10 +19,10 @@ public class CustomErrorController implements ErrorController {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
         try {
-            if (status instanceof Integer) {
+            if (status instanceof Integer httpStatus) {
                 Object currentUri = request.getAttribute("currentUri");
                 if (currentUri != null && currentUri.toString().endsWith("/actuator/refresh") &&
-                        status == HttpStatus.METHOD_NOT_ALLOWED.value()) {
+                        httpStatus == HttpStatus.METHOD_NOT_ALLOWED.value()) {
                     return "redirect:/refresh";
                 }
 

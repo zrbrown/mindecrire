@@ -32,8 +32,8 @@ public class UserAuthorizationPermissionEvaluator implements PermissionEvaluator
 
         boolean hasPermission = hasPermission(username, (Permission) permission);
 
-        if (targetDomainObject instanceof String) {
-            hasPermission = hasPermission && ownsPost(targetDomainObject, username);
+        if (targetDomainObject instanceof String postUrl) {
+            hasPermission = hasPermission && ownsPost(postUrl, username);
         }
 
         return hasPermission;
