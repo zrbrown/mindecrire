@@ -6,7 +6,7 @@ server:
     key-store-password:
     keyStoreType: PKCS12
     keyAlias: mindy
-  server.tomcat.mbeanregistry.enabled: true
+  tomcat.mbeanregistry.enabled: true
 
 spring:
   freemarker:
