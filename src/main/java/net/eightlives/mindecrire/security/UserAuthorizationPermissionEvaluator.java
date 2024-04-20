@@ -24,11 +24,11 @@ public class UserAuthorizationPermissionEvaluator implements PermissionEvaluator
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        String username = ((OAuth2AuthenticatedPrincipal) authentication.getPrincipal()).getAttribute("login");
-
-        if (username == null) {
+        var loginAttribute = ((OAuth2AuthenticatedPrincipal) authentication.getPrincipal()).getAttribute("login");
+        if (!(loginAttribute instanceof String)) {
             return false;
         }
+        String username = (String) loginAttribute;
 
         boolean hasPermission = hasPermission(username, (Permission) permission);
 

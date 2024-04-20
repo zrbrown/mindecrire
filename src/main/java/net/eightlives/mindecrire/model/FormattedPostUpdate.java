@@ -5,6 +5,11 @@ public class FormattedPostUpdate {
     private String content;
     private String date;
 
+    public FormattedPostUpdate(String content, String date) {
+        this.content = content;
+        this.date = date;
+    }
+
     public String getContent() {
         return content;
     }

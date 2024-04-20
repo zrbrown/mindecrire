@@ -11,7 +11,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "user-authorization")
 public class UserAuthorizationConfig {
 
-    private Map<String, List<Permission>> userPermissions;
+    private Map<String, List<Permission>> userPermissions = Map.of();
 
     public Map<String, List<Permission>> getUserPermissions() {
         return userPermissions;

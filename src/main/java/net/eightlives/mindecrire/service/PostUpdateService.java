@@ -1,9 +1,9 @@
 package net.eightlives.mindecrire.service;
 
-import net.eightlives.mindecrire.dao.model.Post;
 import net.eightlives.mindecrire.dao.PostRepository;
-import net.eightlives.mindecrire.dao.model.PostUpdate;
 import net.eightlives.mindecrire.dao.PostUpdateRepository;
+import net.eightlives.mindecrire.dao.model.Post;
+import net.eightlives.mindecrire.dao.model.PostUpdate;
 import net.eightlives.mindecrire.model.FormattedPostUpdate;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -33,17 +33,14 @@ public class PostUpdateService {
 
         return postUpdates.stream()
                 .map(postUpdate -> {
-                    FormattedPostUpdate formattedPostUpdate = new FormattedPostUpdate();
-
                     Parser parser = Parser.builder().build();
                     Node document = parser.parse(postUpdate.getContent());
                     HtmlRenderer renderer = HtmlRenderer.builder().build();
                     String renderedContent = renderer.render(document);
-                    formattedPostUpdate.setContent(renderedContent);
 
-                    formattedPostUpdate.setDate(postUpdate.getUpdatedDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
-
-                    return formattedPostUpdate;
+                    return new FormattedPostUpdate(
+                            renderedContent,
+                            postUpdate.getUpdatedDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
                 }).collect(Collectors.toList());
     }
 

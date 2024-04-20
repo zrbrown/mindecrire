@@ -24,7 +24,7 @@ public class AuthorDetailsService {
                 .orElseGet(() -> {
                     String displayName = authentication.getPrincipal().getAttribute("name");
                     if (displayName == null) {
-                        LOG.error("OAuth authentication is missing the 'name' attribute. Using username instead for author " + authorId);
+                        LOG.error("OAuth authentication is missing the 'name' attribute. Using username instead for author {}", authorId);
                         displayName = authentication.getPrincipal().getAttribute("login");
                         if (displayName == null) {
                             throw new IllegalStateException("OAuth authentication is missing the 'login' attribute. This is either a bug from a standard provider, or your custom provider does not provide this attribute.");

@@ -2,10 +2,10 @@ server:
   port: 443
   ssl:
     enabled: true
-    key-store: /etc/mindecrire/ssl/keystore.p12
+    key-store: src/test/resources/existing_keystore.p12
     key-store-password:
     keyStoreType: PKCS12
-    keyAlias: mindecrire
+    keyAlias: friendlyssl
   tomcat.mbeanregistry.enabled: true
 
 spring:
@@ -15,28 +15,52 @@ spring:
     settings.template_exception_handler: rethrow
   datasource:
     platform: postgres
-    username: postgres
-    password: postgres
   jpa.properties.hibernate:
     dialect: org.hibernate.dialect.PostgreSQLDialect
     jdbc.lob.non_contextual_creation: true
+    default_schema: application
   servlet.multipart:
     max-file-size: 10MB
   security.oauth2.client.registration:
     github.provider: github
+    github.client-id: x
   profiles.active: native
   cloud.config.server:
     prefix: config
-    git: file://etc/mindecrire/config/config-repo
+    git.uri: file://etc/mindecrire/config/config-repo
 
 friendly-ssl:
   certificate-key-alias: mindecrire
-  account-private-key-file: /etc/mindecrire/ssl/account.pem
-  keystore-file: /etc/mindecrire/ssl/keystore.p12
-  terms-of-service-file: /etc/mindecrire/ssl/tos
+  account-private-key-file: mindecrire/ssl/account.pem
+  keystore-file: mindecrire/ssl/keystore.p12
+  terms-of-service-file: mindecrire/ssl/tos
   endpoints-include: certificate, tos
 
 management.endpoints.web.exposure.include: refresh
+
+site.url: https://myblog.com
+userAuthorization.userPermissions:
+  all-perms: ADMIN, POST_ADMIN, POST_ADD, POST_EDIT, POST_UPDATE
+  no-admin: POST_ADMIN, POST_ADD, POST_EDIT, POST_UPDATE
+  no-add: ADMIN, POST_ADMIN, POST_EDIT, POST_UPDATE
+  no-edit-or-post-admin: ADMIN, POST_ADD, POST_UPDATE
+  no-update-or-post-admin: ADMIN, POST_ADD, POST_EDIT
+  admin: ADMIN
+  post-admin: POST_ADMIN
+  add: POST_ADD
+  edit: POST_EDIT
+  update: POST_UPDATE
+
+staticContent.markdownToName:
+  projects: My Projects
+  about: About
+  not-exist: This does not exist
+
+objectStorage:
+  imageBucket:
+    name: pics
+    url: https://storage.fake.com
+    region: nyc3
 
 # In consumer, copy below (and overwrite any above as needed) into src/main/java/resources/application.yml
 # and enter project-specific information:

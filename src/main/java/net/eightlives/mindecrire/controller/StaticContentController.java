@@ -16,8 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,9 +41,13 @@ public class StaticContentController {
         if (staticContentConfig.getMarkdownToName() != null &&
                 staticContentConfig.getMarkdownToName().containsKey(markdown)) {
             try {
-                Path path = Paths.get(getClass().getResource("/static/markdown/" + markdown + ".md").toURI());
+                URL url = getClass().getResource("/static/markdown/" + markdown + ".md");
+                if (url == null) {
+                    LOG.error("Markdown file /static/markdown/{}.md cannot be found", markdown);
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server misconfigured");
+                }
 
-                try (Stream<String> fileLines = Files.lines(path)) {
+                try (Stream<String> fileLines = Files.lines(Paths.get(url.toURI()))) {
                     String content = fileLines.collect(Collectors.joining("\n"));
 
                     Parser parser = Parser.builder().build();
@@ -56,10 +60,10 @@ public class StaticContentController {
                     model.addAttribute("content", renderedContent);
                 }
             } catch (URISyntaxException e) {
-                LOG.error("Error while constructing path for markdown file " + "/static/markdown/" + markdown + ".md", e);
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Page not found");
+                LOG.error("Error while constructing path for markdown file /static/markdown/{}.md", markdown, e);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server misconfigured");
             } catch (IOException e) {
-                LOG.error("Error while reading markdown file " + "/static/markdown/" + markdown + ".md", e);
+                LOG.error("Error while reading markdown file /static/markdown/{}.md", markdown, e);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error loading page");
             }
 

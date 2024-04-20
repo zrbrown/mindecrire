@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletResponse;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -31,14 +33,16 @@ import java.util.Set;
 public class BlogController {
 
     private final BaseConfig config;
+    private final Clock clock;
     private final PostService postService;
     private final PostUpdateService postUpdateService;
     private final TagService tagService;
     private final AttributeProviderFactory attributeProviderFactory;
 
-    public BlogController(BaseConfig config, PostService postService, PostUpdateService postUpdateService,
+    public BlogController(BaseConfig config, Clock clock, PostService postService, PostUpdateService postUpdateService,
                           TagService tagService, AttributeProviderFactory attributeProviderFactory) {
         this.config = config;
+        this.clock = clock;
         this.postService = postService;
         this.postUpdateService = postUpdateService;
         this.tagService = tagService;
@@ -47,7 +51,7 @@ public class BlogController {
 
     @GetMapping
     public String latestBlog() {
-        return  postService.getLatestPost().map(post -> "redirect:/blog/" + post.getUrlName()).orElse("blog");
+        return postService.getLatestPost().map(post -> "redirect:/blog/" + post.getUrlName()).orElse("blog_page");
     }
 
     @GetMapping("/{postUrlName}")
@@ -55,35 +59,26 @@ public class BlogController {
         Optional<Post> requestedPost = postService.getPostByUrlName(postUrlName);
 
         if (requestedPost.isPresent()) {
-            applyPostToModel(requestedPost.get(), model, true, true);
-            return "blog";
+            applyPostToModel(requestedPost.get(), model);
+            return "blog_page";
         }
 
         return "redirect:/blog";
     }
 
-    private void applyPostToModel(Post requestedPost, Model model, boolean showPreviousButton,
-                                  boolean showNextButton) {
+    private void applyPostToModel(Post requestedPost, Model model) {
         model.addAttribute("postUpdates", postUpdateService.getFormattedPostUpdates(requestedPost));
 
         Set<String> tags = tagService.getTags(requestedPost);
         renderPost(model, requestedPost, tags);
 
-        if (showPreviousButton) {
-            Optional<Post> previousPost = postService.getPreviousPost(requestedPost);
-            model.addAttribute("showPrevious", previousPost.isPresent());
-            previousPost.ifPresent(p -> model.addAttribute("previousPost", p.getUrlName()));
-        } else {
-            model.addAttribute("showPrevious", false);
-        }
+        Optional<Post> previousPost = postService.getPreviousPost(requestedPost);
+        model.addAttribute("showPrevious", previousPost.isPresent());
+        previousPost.ifPresent(p -> model.addAttribute("previousPost", p.getUrlName()));
 
-        if (showNextButton) {
-            Optional<Post> nextPost = postService.getNextPost(requestedPost);
-            model.addAttribute("showNext", nextPost.isPresent());
-            nextPost.ifPresent(p -> model.addAttribute("nextPost", p.getUrlName()));
-        } else {
-            model.addAttribute("showNext", false);
-        }
+        Optional<Post> nextPost = postService.getNextPost(requestedPost);
+        model.addAttribute("showNext", nextPost.isPresent());
+        nextPost.ifPresent(p -> model.addAttribute("nextPost", p.getUrlName()));
     }
 
     private void renderPost(Model model, Post post, Set<String> tags) {
@@ -105,68 +100,50 @@ public class BlogController {
     @GetMapping("/{postUrlName}/edit")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_EDIT)")
     public String editPost(@PathVariable String postUrlName, Model model) {
-        Optional<Post> post = postService.getPostByUrlName(postUrlName);
+        return postService.getPostByUrlName(postUrlName).map(post -> {
+            model.addAttribute("postTitle", post.getTitle());
+            model.addAttribute("postContent", post.getContent());
+            model.addAttribute("submitPath", "/blog/" + postUrlName + "/edit");
+            model.addAttribute("ajaxBaseUrl", config.getUrl());
 
-        if (post.isEmpty()) {
-            return "redirect:/blog";
-        }
+            Set<String> tags = tagService.getTags(post);
+            model.addAttribute("tags", tags);
 
-        model.addAttribute("postTitle", post.get().getTitle());
-        model.addAttribute("postContent", post.get().getContent());
-        model.addAttribute("submitPath", "/blog/" + postUrlName + "/edit");
-        model.addAttribute("ajaxBaseUrl", config.getUrl());
-
-        Set<String> tags = tagService.getTags(post.get());
-        model.addAttribute("tags", tags);
-
-        return "blog_actions/blog_edit";
+            return "blog_actions/blog_edit";
+        }).orElse("redirect:/blog");
     }
 
     @PostMapping("/{postUrlName}/edit")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_EDIT)")
     public String submitPostEdit(@PathVariable String postUrlName, FormBlogPost blogPost) {
-        Optional<Post> postOptional = postService.getPostByUrlName(postUrlName);
+        postService.getPostByUrlName(postUrlName).ifPresent(post -> postService.editPost(
+                post, blogPost.getPostTitle(), blogPost.getPostContent(), blogPost.getAddedTags()));
 
-        if (postOptional.isEmpty()) {
-            return "redirect:/blog/{postUrlName}";
-        }
-
-        postService.editPost(postOptional.get(), blogPost.getPostTitle(), blogPost.getPostContent(),
-                blogPost.getAddedTags());
-
-        return "redirect:/blog/{postUrlName}";
+        return "redirect:/blog/" + postUrlName;
     }
 
     @GetMapping("/{postUrlName}/update")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_UPDATE)")
     public String updatePost(@PathVariable String postUrlName, Model model) {
-        Optional<Post> post = postService.getPostByUrlName(postUrlName);
+        return postService.getPostByUrlName(postUrlName).map(post -> {
+            Set<String> tags = tagService.getTags(post);
 
-        if (post.isEmpty()) {
-            return "redirect:/blog";
-        }
+            renderPost(model, post, tags);
 
-        Set<String> tags = tagService.getTags(post.get());
+            model.addAttribute("submitPath", "/blog/" + postUrlName + "/update");
 
-        renderPost(model, post.get(), tags);
-
-        model.addAttribute("submitPath", "/blog/" + postUrlName + "/update");
-
-        return "blog_actions/blog_update";
+            return "blog_actions/blog_update";
+        }).orElse("redirect:/blog");
     }
 
     @PostMapping("/{postUrlName}/update")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_UPDATE)")
     public String submitPostUpdate(@PathVariable String postUrlName, FormBlogPostUpdate blogPostUpdate) {
-        Optional<Post> postOptional = postService.getPostByUrlName(postUrlName);
-
-        if (postOptional.isEmpty()) {
-            return "redirect:/blog/{postUrlName}";
-        }
-
-        postUpdateService.addPostUpdate(postOptional.get(), blogPostUpdate.getPostContent(), LocalDateTime.now());
-
-        return "redirect:/blog/{postUrlName}";
+        return postService.getPostByUrlName(postUrlName)
+                .map(post -> {
+                    postUpdateService.addPostUpdate(post, blogPostUpdate.getPostContent(), LocalDateTime.now(clock));//TODO set local timezone
+                    return "redirect:/blog/" + postUrlName;
+                }).orElse("redirect:/blog/" + postUrlName);
     }
 
     @GetMapping("/add")
@@ -180,9 +157,9 @@ public class BlogController {
 
     @PostMapping("/add")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADD)")
-    public String submitPost(FormBlogPost blogPost, OAuth2AuthenticationToken authentication, Model model) {
+    public String submitPost(FormBlogPost blogPost, OAuth2AuthenticationToken authentication, Model model, HttpServletResponse response) {
         try {
-            postService.addPost(blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(),
+            postService.addPost(blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(clock),
                     blogPost.getAddedTags(), authentication);
         } catch (DuplicatePostUrlNameException e) {
             model.addAttribute("postTitle", blogPost.getPostTitle());
@@ -193,6 +170,7 @@ public class BlogController {
             model.addAttribute("ajaxBaseUrl", config.getUrl());
             model.addAttribute("validationMessage", "A post with this title already exists. Use a different title.");
 
+            response.setStatus(409);
             return "blog_actions/blog_edit";
         }
 

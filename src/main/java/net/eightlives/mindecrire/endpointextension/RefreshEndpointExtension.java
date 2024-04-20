@@ -12,7 +12,7 @@ import java.util.Collection;
 @EndpointWebExtension(endpoint = RefreshEndpoint.class)
 public class RefreshEndpointExtension {
 
-    private RefreshEndpoint delegate;
+    private final RefreshEndpoint delegate;
 
     public RefreshEndpointExtension(RefreshEndpoint delegate) {
         this.delegate = delegate;

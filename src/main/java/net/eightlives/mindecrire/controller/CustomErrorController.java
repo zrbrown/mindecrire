@@ -28,13 +28,13 @@ public class CustomErrorController implements ErrorController {
                     return "redirect:/refresh";
                 }
 
-                model.addAttribute("errorMessage", status.toString() + " " +
+                model.addAttribute("errorMessage", status + " " +
                         HttpStatus.valueOf((Integer) status).getReasonPhrase());
             } else {
                 model.addAttribute("errorMessage", "An error occurred");
             }
         } catch (IllegalArgumentException e) {
-            LOG.error("HttpStatus " + status + " does not exist", e);
+            LOG.error("HttpStatus {} does not exist", status, e);
             model.addAttribute("errorMessage", "An error occurred");
         }
 
