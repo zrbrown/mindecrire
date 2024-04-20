@@ -2,15 +2,15 @@ server:
   port: 443
   ssl:
     enabled: true
-    key-store: /etc/mindy/ssl/keystore.p12
+    key-store: /etc/mindecrire/ssl/keystore.p12
     key-store-password:
     keyStoreType: PKCS12
-    keyAlias: mindy
+    keyAlias: mindecrire
   tomcat.mbeanregistry.enabled: true
 
 spring:
   freemarker:
-    template-loader-path: classpath:/mindy_templates,classpath:/templates
+    template-loader-path: classpath:/mindecrire_templates,classpath:/templates
     suffix: .ftl
     settings.template_exception_handler: rethrow
   datasource:
