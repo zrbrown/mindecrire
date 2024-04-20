@@ -1,11 +1,12 @@
 package net.eightlives.mindy.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import net.eightlives.mindy.config.custom.StaticContentConfig;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.AttributeProviderFactory;
 import org.commonmark.renderer.html.HtmlRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,9 +22,10 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Slf4j
 @Controller
 public class StaticContentController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StaticContentController.class);
 
     private final StaticContentConfig staticContentConfig;
     private final AttributeProviderFactory attributeProviderFactory;
@@ -54,10 +56,10 @@ public class StaticContentController {
                     model.addAttribute("content", renderedContent);
                 }
             } catch (URISyntaxException e) {
-                log.error("Error while constructing path for markdown file " + "/static/markdown/" + markdown + ".md", e);
+                LOG.error("Error while constructing path for markdown file " + "/static/markdown/" + markdown + ".md", e);
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Page not found");
             } catch (IOException e) {
-                log.error("Error while reading markdown file " + "/static/markdown/" + markdown + ".md", e);
+                LOG.error("Error while reading markdown file " + "/static/markdown/" + markdown + ".md", e);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error loading page");
             }
 

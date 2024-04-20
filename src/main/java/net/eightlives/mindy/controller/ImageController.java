@@ -1,8 +1,9 @@
 package net.eightlives.mindy.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import net.eightlives.mindy.config.custom.ImageBucketConfig;
 import net.eightlives.mindy.model.ImageUploadResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,11 +25,12 @@ import java.util.List;
 
 import static net.eightlives.mindy.model.ImageUploadResponse.ImageUploadResult;
 
-@Slf4j
 @RestController
 @CrossOrigin
 @RequestMapping("/content/image")
 public class ImageController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ImageController.class);
 
     private final ImageBucketConfig imageBucketConfig;
     private final S3Client uploadClient;
@@ -52,13 +54,13 @@ public class ImageController {
                 connection.setRequestMethod("GET");
                 responseCode = connection.getResponseCode();
             } catch (MalformedURLException e) {
-                log.error("Invalid image upload URL. Configuration is likely incorrect. URL: " + path, e);
+                LOG.error("Invalid image upload URL. Configuration is likely incorrect. URL: " + path, e);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid image upload URL. Configuration is likely incorrect.");
             } catch (ProtocolException e) {
-                log.error("Error while setting up image upload connection.", e);
+                LOG.error("Error while setting up image upload connection.", e);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while setting up image upload connection");
             } catch (IOException e) {
-                log.error("Error connecting to image upload server.", e);
+                LOG.error("Error connecting to image upload server.", e);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error connecting to image upload server");
             }
 
@@ -83,7 +85,7 @@ public class ImageController {
                                 response.sdkHttpResponse().statusCode() + " " + response.sdkHttpResponse().statusText()));
                     }
                 } catch (IOException e) {
-                    log.error("Error reading file to upload", e);
+                    LOG.error("Error reading file to upload", e);
                     uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(),
                             "File " + file.getOriginalFilename() + " could not be read. Try Again."));
                 }
