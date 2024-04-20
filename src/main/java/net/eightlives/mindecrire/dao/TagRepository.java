@@ -1,7 +1,7 @@
-package net.eightlives.mindy.dao;
+package net.eightlives.mindecrire.dao;
 
-import net.eightlives.mindy.dao.model.Post;
-import net.eightlives.mindy.dao.model.Tag;
+import net.eightlives.mindecrire.dao.model.Post;
+import net.eightlives.mindecrire.dao.model.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package net.eightlives.mindy.dao.model;
+package net.eightlives.mindecrire.dao.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

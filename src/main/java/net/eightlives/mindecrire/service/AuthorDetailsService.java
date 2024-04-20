@@ -1,7 +1,7 @@
-package net.eightlives.mindy.service;
+package net.eightlives.mindecrire.service;
 
-import net.eightlives.mindy.dao.AuthorDetailsRepository;
-import net.eightlives.mindy.dao.model.AuthorDetails;
+import net.eightlives.mindecrire.dao.AuthorDetailsRepository;
+import net.eightlives.mindecrire.dao.model.AuthorDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;

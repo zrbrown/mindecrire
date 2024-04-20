@@ -1,4 +1,4 @@
-package net.eightlives.mindy.endpointextension;
+package net.eightlives.mindecrire.endpointextension;
 
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
@@ -19,7 +19,7 @@ public class RefreshEndpointExtension {
     }
 
     @WriteOperation
-    @PreAuthorize("hasPermission(null, T(net.eightlives.mindy.security.Permission).ADMIN)")
+    @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).ADMIN)")
     public Collection<String> refresh() {
         return delegate.refresh();
     }

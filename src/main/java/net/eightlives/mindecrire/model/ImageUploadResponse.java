@@ -1,4 +1,4 @@
-package net.eightlives.mindy.model;
+package net.eightlives.mindecrire.model;
 
 import java.util.ArrayList;
 import java.util.List;

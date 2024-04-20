@@ -1,4 +1,4 @@
-package net.eightlives.mindy.controller;
+package net.eightlives.mindecrire.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,6 +1,6 @@
-package net.eightlives.mindy.dao;
+package net.eightlives.mindecrire.dao;
 
-import net.eightlives.mindy.dao.model.AuthorDetails;
+import net.eightlives.mindecrire.dao.model.AuthorDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

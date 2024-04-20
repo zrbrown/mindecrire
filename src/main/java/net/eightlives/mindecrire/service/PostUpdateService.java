@@ -1,10 +1,10 @@
-package net.eightlives.mindy.service;
+package net.eightlives.mindecrire.service;
 
-import net.eightlives.mindy.dao.model.Post;
-import net.eightlives.mindy.dao.PostRepository;
-import net.eightlives.mindy.dao.model.PostUpdate;
-import net.eightlives.mindy.dao.PostUpdateRepository;
-import net.eightlives.mindy.model.FormattedPostUpdate;
+import net.eightlives.mindecrire.dao.model.Post;
+import net.eightlives.mindecrire.dao.PostRepository;
+import net.eightlives.mindecrire.dao.model.PostUpdate;
+import net.eightlives.mindecrire.dao.PostUpdateRepository;
+import net.eightlives.mindecrire.model.FormattedPostUpdate;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;

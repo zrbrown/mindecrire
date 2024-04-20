@@ -1,4 +1,4 @@
-package net.eightlives.mindy.controller;
+package net.eightlives.mindecrire.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

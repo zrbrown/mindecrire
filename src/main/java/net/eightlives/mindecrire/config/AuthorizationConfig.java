@@ -1,4 +1,4 @@
-package net.eightlives.mindy.config;
+package net.eightlives.mindecrire.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;

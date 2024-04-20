@@ -1,4 +1,4 @@
-package net.eightlives.mindy.exception;
+package net.eightlives.mindecrire.exception;
 
 public class DuplicatePostUrlNameException extends RuntimeException {
 }

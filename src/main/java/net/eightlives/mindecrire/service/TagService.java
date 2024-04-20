@@ -1,8 +1,8 @@
-package net.eightlives.mindy.service;
+package net.eightlives.mindecrire.service;
 
-import net.eightlives.mindy.dao.model.Post;
-import net.eightlives.mindy.dao.model.Tag;
-import net.eightlives.mindy.dao.TagRepository;
+import net.eightlives.mindecrire.dao.model.Post;
+import net.eightlives.mindecrire.dao.model.Tag;
+import net.eightlives.mindecrire.dao.TagRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;

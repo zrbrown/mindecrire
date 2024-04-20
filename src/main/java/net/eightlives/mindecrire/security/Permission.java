@@ -1,4 +1,4 @@
-package net.eightlives.mindy.security;
+package net.eightlives.mindecrire.security;
 
 public enum Permission {
     ADMIN,

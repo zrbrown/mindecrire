@@ -1,7 +1,7 @@
-package net.eightlives.mindy.security;
+package net.eightlives.mindecrire.security;
 
-import net.eightlives.mindy.config.custom.UserAuthorizationConfig;
-import net.eightlives.mindy.service.PostService;
+import net.eightlives.mindecrire.config.custom.UserAuthorizationConfig;
+import net.eightlives.mindecrire.service.PostService;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;

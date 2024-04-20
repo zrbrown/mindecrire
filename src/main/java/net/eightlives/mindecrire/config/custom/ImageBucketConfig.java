@@ -1,4 +1,4 @@
-package net.eightlives.mindy.config.custom;
+package net.eightlives.mindecrire.config.custom;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

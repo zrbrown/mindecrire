@@ -1,11 +1,11 @@
-package net.eightlives.mindy.service;
+package net.eightlives.mindecrire.service;
 
-import net.eightlives.mindy.dao.PostRepository;
-import net.eightlives.mindy.dao.TagRepository;
-import net.eightlives.mindy.dao.model.AuthorDetails;
-import net.eightlives.mindy.dao.model.Post;
-import net.eightlives.mindy.dao.model.Tag;
-import net.eightlives.mindy.exception.DuplicatePostUrlNameException;
+import net.eightlives.mindecrire.dao.PostRepository;
+import net.eightlives.mindecrire.dao.TagRepository;
+import net.eightlives.mindecrire.dao.model.AuthorDetails;
+import net.eightlives.mindecrire.dao.model.Post;
+import net.eightlives.mindecrire.dao.model.Tag;
+import net.eightlives.mindecrire.exception.DuplicatePostUrlNameException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

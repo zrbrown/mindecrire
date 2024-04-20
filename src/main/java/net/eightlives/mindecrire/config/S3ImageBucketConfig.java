@@ -1,6 +1,6 @@
-package net.eightlives.mindy.config;
+package net.eightlives.mindecrire.config;
 
-import net.eightlives.mindy.config.custom.ImageBucketConfig;
+import net.eightlives.mindecrire.config.custom.ImageBucketConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;

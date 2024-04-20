@@ -1,7 +1,7 @@
-package net.eightlives.mindy.controller;
+package net.eightlives.mindecrire.controller;
 
-import net.eightlives.mindy.config.custom.ImageBucketConfig;
-import net.eightlives.mindy.model.ImageUploadResponse;
+import net.eightlives.mindecrire.config.custom.ImageBucketConfig;
+import net.eightlives.mindecrire.model.ImageUploadResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 
-import static net.eightlives.mindy.model.ImageUploadResponse.ImageUploadResult;
+import static net.eightlives.mindecrire.model.ImageUploadResponse.ImageUploadResult;
 
 @RestController
 @CrossOrigin

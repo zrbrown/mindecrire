@@ -1,4 +1,4 @@
-package net.eightlives.mindy.config;
+package net.eightlives.mindecrire.config;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;

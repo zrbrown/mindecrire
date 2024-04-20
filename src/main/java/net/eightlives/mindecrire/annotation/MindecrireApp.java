@@ -1,22 +1,22 @@
-package net.eightlives.mindy.annotation;
+package net.eightlives.mindecrire.annotation;
 
 import net.eightlives.friendlyssl.annotation.FriendlySSL;
-import net.eightlives.mindy.config.AuthorizationConfig;
-import net.eightlives.mindy.config.S3ImageBucketConfig;
-import net.eightlives.mindy.config.SecurityConfig;
-import net.eightlives.mindy.config.TomcatConfig;
-import net.eightlives.mindy.config.custom.BaseConfig;
-import net.eightlives.mindy.config.custom.ImageBucketConfig;
-import net.eightlives.mindy.config.custom.StaticContentConfig;
-import net.eightlives.mindy.config.custom.UserAuthorizationConfig;
-import net.eightlives.mindy.controller.*;
-import net.eightlives.mindy.endpointextension.RefreshEndpointExtension;
-import net.eightlives.mindy.security.UserAuthorizationPermissionEvaluator;
-import net.eightlives.mindy.service.AuthorDetailsService;
-import net.eightlives.mindy.service.PostService;
-import net.eightlives.mindy.service.PostUpdateService;
-import net.eightlives.mindy.service.TagService;
-import net.eightlives.mindy.theme.CssAttributeProviderFactory;
+import net.eightlives.mindecrire.config.AuthorizationConfig;
+import net.eightlives.mindecrire.config.S3ImageBucketConfig;
+import net.eightlives.mindecrire.config.SecurityConfig;
+import net.eightlives.mindecrire.config.TomcatConfig;
+import net.eightlives.mindecrire.config.custom.BaseConfig;
+import net.eightlives.mindecrire.config.custom.ImageBucketConfig;
+import net.eightlives.mindecrire.config.custom.StaticContentConfig;
+import net.eightlives.mindecrire.config.custom.UserAuthorizationConfig;
+import net.eightlives.mindecrire.controller.*;
+import net.eightlives.mindecrire.endpointextension.RefreshEndpointExtension;
+import net.eightlives.mindecrire.security.UserAuthorizationPermissionEvaluator;
+import net.eightlives.mindecrire.service.AuthorDetailsService;
+import net.eightlives.mindecrire.service.PostService;
+import net.eightlives.mindecrire.service.PostUpdateService;
+import net.eightlives.mindecrire.service.TagService;
+import net.eightlives.mindecrire.theme.CssAttributeProviderFactory;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.config.server.EnableConfigServer;
 import org.springframework.context.annotation.Import;
@@ -50,9 +50,9 @@ import java.lang.annotation.*;
         UserAuthorizationPermissionEvaluator.class,
         CssAttributeProviderFactory.class
 })
-@EntityScan(basePackages = {"net.eightlives.mindy.dao.model"})
-@EnableJpaRepositories(basePackages = {"net.eightlives.mindy.dao"})
+@EntityScan(basePackages = {"net.eightlives.mindecrire.dao.model"})
+@EnableJpaRepositories(basePackages = {"net.eightlives.mindecrire.dao"})
 @EnableConfigServer
 @FriendlySSL
-public @interface MindyApp {
+public @interface MindecrireApp {
 }

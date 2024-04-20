@@ -28,10 +28,10 @@ spring:
   cloud.config.server.prefix: config
 
 friendly-ssl:
-  certificate-key-alias: mindy
-  account-private-key-file: /etc/mindy/ssl/account.pem
-  keystore-file: /etc/mindy/ssl/keystore.p12
-  terms-of-service-file: /etc/mindy/ssl/tos
+  certificate-key-alias: mindecrire
+  account-private-key-file: /etc/mindecrire/ssl/account.pem
+  keystore-file: /etc/mindecrire/ssl/keystore.p12
+  terms-of-service-file: /etc/mindecrire/ssl/tos
   endpoints-include: certificate, tos
 
 management.endpoints.web.exposure.include: refresh
