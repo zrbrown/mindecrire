@@ -20,8 +20,13 @@ import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -53,12 +58,12 @@ public class ImageControllerTest extends ControllerTest {
 
         @BeforeEach
         void beforeEach() throws IOException {
-            file = new MockMultipartFile("files", "hello.txt", MediaType.IMAGE_JPEG_VALUE, "Hello, World!".getBytes());//TODO get jpeg and fix names
-            file2 = new MockMultipartFile("files", "hello2.txt", MediaType.IMAGE_JPEG_VALUE, "Hello, World!".getBytes());//TODO get jpeg and fix names
-            existingFile = new MockMultipartFile("files", "hello3.txt", MediaType.IMAGE_JPEG_VALUE, "Hello, World!".getBytes());//TODO get jpeg and fix names
-            failedUploadFile = new MockMultipartFile("files", "hello4.txt", MediaType.IMAGE_JPEG_VALUE, "Hello, World!".getBytes());//TODO get jpeg and fix names
-            failedUploadNoMessageFile = new MockMultipartFile("files", "hello5.txt", MediaType.IMAGE_JPEG_VALUE, "Hello, World!".getBytes());//TODO get jpeg and fix names
-            ioExceptionFile = spy(new MockMultipartFile("files", "hello6.txt", MediaType.IMAGE_JPEG_VALUE, "Hello, World!".getBytes()));
+            file = new MockMultipartFile("files", "hello.txt", MediaType.IMAGE_JPEG_VALUE, Files.readAllBytes(Paths.get("src","test","resources","images","test-img.jpg")));
+            file2 = new MockMultipartFile("files", "hello2.txt", MediaType.IMAGE_GIF_VALUE, Files.readAllBytes(Paths.get("src","test","resources","images","test-img.gif")));
+            existingFile = new MockMultipartFile("files", "hello3.txt", MediaType.IMAGE_PNG_VALUE, Files.readAllBytes(Paths.get("src","test","resources","images","test-img.png")));
+            failedUploadFile = new MockMultipartFile("files", "hello4.txt", "image/webp", Files.readAllBytes(Paths.get("src","test","resources","images","test-img.webp")));
+            failedUploadNoMessageFile = new MockMultipartFile("files", "hello5.txt", "image/avif", Files.readAllBytes(Paths.get("src","test","resources","images","test-img.avif")));
+            ioExceptionFile = spy(new MockMultipartFile("files", "hello6.txt", "image/tiff", Files.readAllBytes(Paths.get("src","test","resources","images","test-img.tiff"))));
             lenient().doThrow(new IOException()).when(ioExceptionFile).getInputStream();
 
             try (var realClient = S3Client.create()) {
@@ -177,7 +182,7 @@ public class ImageControllerTest extends ControllerTest {
                                                 builder.build().key().equals(file2.getOriginalFilename()) &&
                                                 builder.build().contentType().equals(file2.getContentType()) &&
                                                 builder.build().acl().equals(ObjectCannedACL.PUBLIC_READ))),
-                                argThat(new MultipartMatcher(file)));
+                                argThat(new MultipartMatcher(file2)));
                 doReturn(PutObjectResponse.builder()
                         .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(500).statusText("It failed!").build()))
                         .build())

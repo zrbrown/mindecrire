@@ -1,15 +1,17 @@
 package net.eightlives.mindecrire.dao.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "author_details")
 public class AuthorDetails {
 
     @Id
+    @GeneratedValue
+    private UUID id;
+
+    @Column
     private String author;
 
     @Column
@@ -18,9 +20,18 @@ public class AuthorDetails {
     public AuthorDetails() {
     }
 
-    public AuthorDetails(String author, String displayName) {
+    public AuthorDetails(UUID id, String author, String displayName) {
+        this.id = id;
         this.author = author;
         this.displayName = displayName;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getAuthor() {

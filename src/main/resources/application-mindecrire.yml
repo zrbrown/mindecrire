@@ -11,7 +11,7 @@ server:
 spring:
   freemarker:
     template-loader-path: classpath:/mindecrire_templates,classpath:/templates
-    suffix: .ftl
+    suffix: .ftlh
     settings.template_exception_handler: rethrow
   datasource:
     platform: postgres
@@ -27,7 +27,9 @@ spring:
   profiles.active: native
   cloud.config.server:
     prefix: config
-    git: file://etc/mindecrire/config/config-repo
+    git.uri: file://etc/mindecrire/config/config-repo
+  flyway.locations: classpath:sql
+  jmx.server: mBeanServer
 
 friendly-ssl:
   certificate-key-alias: mindecrire
@@ -38,11 +40,11 @@ friendly-ssl:
 
 management.endpoints.web.exposure.include: refresh
 
-# In consumer, copy below (and overwrite any above as needed) into src/main/java/resources/application.yml
+# In consumer, copy below (and overwrite any above as needed) into src/main/resources/application.yml
 # and enter project-specific information:
 #
 #  spring:
-#    spring.jpa.properties.hibernate.default_schema: application
+#    jpa.properties.hibernate.default_schema: application
 #    security.oauth2.client.registration.github.client-id: x
 #
 #  objectStorage:
@@ -56,14 +58,14 @@ management.endpoints.web.exposure.include: refresh
 #  userAuthorization.userPermissions:
 #    username: ADMIN, POST_ADMIN, POST_ADD, POST_EDIT, POST_UPDATE
 
-# Static pages can be added by creating a markdown (.md) file in src/main/java/resources/static/markdown and
+# Static pages can be added by creating a markdown (.md) file in src/main/resources/static/markdown and
 # adding the filename without the extension as the key and title to display on the page as the value:
 #
 #  staticContent.markdownToName:
 #    projects: My Projects
 #    about: About
 
-# In production, copy below into production.yml in the root directory and enter secrets:
+# In production, copy below into production.yml in the project root directory and enter secrets:
 #
 #  spring:
 #    datasource:

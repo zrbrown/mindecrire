@@ -90,6 +90,7 @@ public class BlogController {
         Node document = parser.parse(post.getContent());
         HtmlRenderer renderer = HtmlRenderer.builder().
                 attributeProviderFactory(attributeProviderFactory)
+                .escapeHtml(true)
                 .build();
         String renderedContent = renderer.render(document);
         model.addAttribute("postContent", renderedContent);
@@ -141,7 +142,7 @@ public class BlogController {
     public String submitPostUpdate(@PathVariable String postUrlName, FormBlogPostUpdate blogPostUpdate) {
         return postService.getPostByUrlName(postUrlName)
                 .map(post -> {
-                    postUpdateService.addPostUpdate(post, blogPostUpdate.getPostContent(), LocalDateTime.now(clock));//TODO set local timezone
+                    postUpdateService.addPostUpdate(post, blogPostUpdate.getPostContent(), LocalDateTime.now(clock));
                     return "redirect:/blog/" + postUrlName;
                 }).orElse("redirect:/blog/" + postUrlName);
     }

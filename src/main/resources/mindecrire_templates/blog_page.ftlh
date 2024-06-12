@@ -1,19 +1,18 @@
-<#include "/common_vars.ftl"/>
+<#include "/common_vars.ftlh"/>
 <!DOCTYPE html>
 
 <html>
 <head>
     <meta charset="utf-8">
-    <title>${title}</title>
+    <title>${title!headTitle!"Mindecrire Site"}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="/css/mindecrire.css">
     <link rel="stylesheet" href="${customCss}">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 </head>
 
 <body>
-<#include "/common/header.ftl"/>
+<#include "/common/header.ftlh"/>
 
 <div class="content-container">
     <div class="post-title">${postTitle!}</div>
@@ -21,14 +20,14 @@
         <#list postUpdates as postUpdate>
             <div class="post-update-container">
                 <span class="post-update-date">Updated ${postUpdate.date}</span>
-                <div>${postUpdate.content}</div>
+                <div>${postUpdate.content?no_esc}</div>
             </div>
         </#list>
     </#if>
     <span class="post-date">${postDate!}</span>
     <br/>
     <span class="post-author">${postAuthor!}</span>
-    <div>${postContent!}</div>
+    <div>${postContent!?no_esc}</div>
     <#if tags??>
         <#list tags>
             <div class="tag-container">

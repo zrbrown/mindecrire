@@ -29,10 +29,10 @@ button {
 
 .headerLinkContainer {
     clear: both;
+    height: 2em;
 }
 
 .headerNavContainer {
-    margin: 0;
     padding: 0 0 0 20px;
     float: left;
 }
@@ -48,17 +48,16 @@ button {
 }
 
 .headerIconContainer {
-    margin: 0;
-    float: right;
+    height: 100%;
+    text-align: right;
 }
 
-.headerIcon {
-    color: #000000;
+.headerIconLink {
     padding-right: 6px;
 }
 
-.headerIcon:hover {
-    color: #777777;
+.headerIcon {
+    max-height: 90%;
 }
 
 .validation-text {

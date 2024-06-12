@@ -1,4 +1,4 @@
-<#include "/common_vars.ftl"/>
+<#include "/common_vars.ftlh"/>
 <!DOCTYPE html>
 
 <html>
@@ -9,7 +9,6 @@
 
     <link rel="stylesheet" href="/css/mindecrire.css">
     <link rel="stylesheet" href="${customCss}">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
 
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
@@ -17,7 +16,7 @@
 </head>
 
 <body>
-<#include "/common/header.ftl"/>
+<#include "/common/header.ftlh"/>
 
 <div class="content-container">
     <form action="${submitPath}" method="post">

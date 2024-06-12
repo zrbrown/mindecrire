@@ -61,7 +61,7 @@ public class BlogControllerTest extends ControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        author = authorDetailsRepository.save(new AuthorDetails("github-zrbrown", "Zack Brown"));
+        author = authorDetailsRepository.save(new AuthorDetails(UUID.randomUUID(), "github-zrbrown", "Zack Brown"));
 
         when(clock.instant()).thenReturn(NOW.atZone(ZoneId.of("-05:00")).toInstant());
         when(clock.getZone()).thenReturn(ZoneId.of("-05:00"));
@@ -350,7 +350,7 @@ public class BlogControllerTest extends ControllerTest {
                 assertEquals("New Test Post!", post.getTitle());
                 assertEquals("Stuff about stuff.", post.getContent());
 
-                AuthorDetails author = authorDetailsRepository.findById("github-otherzack").orElseThrow();
+                AuthorDetails author = authorDetailsRepository.findByAuthor("github-otherzack").orElseThrow();
                 assertEquals("Zack Notbrown", author.getDisplayName());
             }
 
@@ -370,7 +370,7 @@ public class BlogControllerTest extends ControllerTest {
                 assertEquals("New Test Post!", post.getTitle());
                 assertEquals("Stuff about stuff.", post.getContent());
 
-                AuthorDetails author = authorDetailsRepository.findById("github-otherzack").orElseThrow();
+                AuthorDetails author = authorDetailsRepository.findByAuthor("github-otherzack").orElseThrow();
                 assertEquals("add", author.getDisplayName());
             }
         }
@@ -385,7 +385,7 @@ public class BlogControllerTest extends ControllerTest {
 
         @BeforeEach
         void beforeEach() {
-            author = authorDetailsRepository.save(new AuthorDetails("edit", "Zack Brown"));
+            author = authorDetailsRepository.save(new AuthorDetails(UUID.randomUUID(), "edit", "Zack Brown"));
             todayPost = postRepository.save(new Post(UUID.randomUUID(), "test-post", "Test Post", "nothing here", TODAY, Set.of(), author));
         }
 
@@ -570,7 +570,7 @@ public class BlogControllerTest extends ControllerTest {
 
         @BeforeEach
         void beforeEach() {
-            author = authorDetailsRepository.save(new AuthorDetails("update", "Zack Brown"));
+            author = authorDetailsRepository.save(new AuthorDetails(UUID.randomUUID(), "update", "Zack Brown"));
             todayPost = postRepository.save(new Post(UUID.randomUUID(), "test-post", "Test Post", "nothing here", TODAY, Set.of(), author));
         }
 

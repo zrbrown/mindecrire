@@ -2,13 +2,24 @@ CREATE SCHEMA IF NOT EXISTS application;
 
 SET SEARCH_PATH TO application;
 
+CREATE TABLE IF NOT EXISTS author_details
+(
+    id           UUID PRIMARY KEY,
+    author       TEXT UNIQUE NOT NULL,
+    display_name TEXT
+);
+
+CREATE INDEX IF NOT EXISTS author_index
+    ON author_details (author);
+
 CREATE TABLE IF NOT EXISTS posts
 (
     id                UUID PRIMARY KEY,
     url_name          TEXT UNIQUE NOT NULL,
     title             TEXT NOT NULL,
     content           TEXT NOT NULL,
-    created_date_time TIMESTAMP NOT NULL
+    created_date_time TIMESTAMP NOT NULL,
+    author_id         UUID NOT NULL REFERENCES author_details (id)
 );
 
 CREATE INDEX IF NOT EXISTS url_name_index

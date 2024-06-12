@@ -11,7 +11,7 @@
         </div>
         <div class="headerIconContainer">
             <#list headerIcons as headerIcon>
-                <a href="${headerIcon[0]}" class="headerIcon" title="${headerIcon[1]}"><span class="fa ${headerIcon[2]} fa-2x"></span></a>
+                <a href="${headerIcon[0]}" class="headerIconLink" title="${headerIcon[1]}"><img src="${headerIcon[2]}" alt="${headerIcon[1]}" class="headerIcon"/></a>
             </#list>
         </div>
     </div>

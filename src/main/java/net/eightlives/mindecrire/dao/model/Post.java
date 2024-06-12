@@ -33,7 +33,7 @@ public class Post {
     private Set<Tag> tags;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author")
+    @JoinColumn(name = "author_id")
     private AuthorDetails authorDetails;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")

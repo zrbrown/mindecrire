@@ -13,8 +13,8 @@ import java.util.Collections;
 @Component
 public class UserAuthorizationPermissionEvaluator implements PermissionEvaluator {
 
-    private UserAuthorizationConfig userAuthorizationConfig;
-    private PostService postService;
+    private final UserAuthorizationConfig userAuthorizationConfig;
+    private final PostService postService;
 
     public UserAuthorizationPermissionEvaluator(UserAuthorizationConfig userAuthorizationConfig,
                                                 PostService postService) {
