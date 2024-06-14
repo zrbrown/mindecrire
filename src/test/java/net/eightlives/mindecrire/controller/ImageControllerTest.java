@@ -15,17 +15,15 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.SdkRequest;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
-import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +47,7 @@ public class ImageControllerTest extends ControllerTest {
     MockMultipartFile file2;
     MockMultipartFile existingFile;
     MockMultipartFile failedUploadFile;
-    MockMultipartFile failedUploadNoMessageFile;
+    MockMultipartFile sdkClientFailedFile;
     MockMultipartFile ioExceptionFile;
 
     @DisplayName("Adding images")
@@ -62,7 +60,7 @@ public class ImageControllerTest extends ControllerTest {
             file2 = new MockMultipartFile("files", "hello2.txt", MediaType.IMAGE_GIF_VALUE, Files.readAllBytes(Paths.get("src","test","resources","images","test-img.gif")));
             existingFile = new MockMultipartFile("files", "hello3.txt", MediaType.IMAGE_PNG_VALUE, Files.readAllBytes(Paths.get("src","test","resources","images","test-img.png")));
             failedUploadFile = new MockMultipartFile("files", "hello4.txt", "image/webp", Files.readAllBytes(Paths.get("src","test","resources","images","test-img.webp")));
-            failedUploadNoMessageFile = new MockMultipartFile("files", "hello5.txt", "image/avif", Files.readAllBytes(Paths.get("src","test","resources","images","test-img.avif")));
+            sdkClientFailedFile = new MockMultipartFile("files", "hello5.txt", "image/avif", Files.readAllBytes(Paths.get("src","test","resources","images","test-img.avif")));
             ioExceptionFile = spy(new MockMultipartFile("files", "hello6.txt", "image/tiff", Files.readAllBytes(Paths.get("src","test","resources","images","test-img.tiff"))));
             lenient().doThrow(new IOException()).when(ioExceptionFile).getInputStream();
 
@@ -71,14 +69,13 @@ public class ImageControllerTest extends ControllerTest {
             }
         }
 
-        @DisplayName("when bucket does not exist")
+        @DisplayName("when bucket check throws an exception")
         @Test
-        void bucketNotExist() throws Exception {
-            doReturn(HeadBucketResponse.builder()
-                    .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(403).build()))
-                    .build()).when(s3Client).headBucket(argThat(new SdkRequestMatcher<>(HeadBucketRequest.builder(),
-                    builder -> builder.build().bucket().equals("pics")
-            )));
+        void bucketThrowsException() throws Exception {
+            doThrow(NoSuchBucketException.class)
+                    .when(s3Client).headBucket(argThat(new SdkRequestMatcher<>(HeadBucketRequest.builder(),
+                            builder -> builder.build().bucket().equals("pics")
+                    )));
 
             mvc.perform(multipart("/content/image/add")
                             .file(file)
@@ -104,9 +101,7 @@ public class ImageControllerTest extends ControllerTest {
             @DisplayName("GET /content/image/add with single image")
             @Test
             void addImage() throws Exception {
-                doReturn(HeadObjectResponse.builder()
-                        .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(403).build()))
-                        .build()).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
+                doThrow(NoSuchKeyException.class).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
                         builder -> builder.build().bucket().equals("pics") && builder.build().key().equals(file.getOriginalFilename())
                 )));
                 doReturn(PutObjectResponse.builder()
@@ -132,14 +127,10 @@ public class ImageControllerTest extends ControllerTest {
             @DisplayName("GET /content/image/add with multiple images, some failing")
             @Test
             void addImages() throws Exception {
-                doReturn(HeadObjectResponse.builder()
-                        .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(403).build()))
-                        .build()).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
+                doThrow(NoSuchKeyException.class).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
                         builder -> builder.build().bucket().equals("pics") && builder.build().key().equals(file.getOriginalFilename())
                 )));
-                doReturn(HeadObjectResponse.builder()
-                        .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(403).build()))
-                        .build()).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
+                doThrow(NoSuchKeyException.class).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
                         builder -> builder.build().bucket().equals("pics") && builder.build().key().equals(file2.getOriginalFilename())
                 )));
                 doReturn(HeadObjectResponse.builder()
@@ -147,19 +138,13 @@ public class ImageControllerTest extends ControllerTest {
                         .build()).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
                         builder -> builder.build().bucket().equals("pics") && builder.build().key().equals(existingFile.getOriginalFilename())
                 )));
-                doReturn(HeadObjectResponse.builder()
-                        .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(403).build()))
-                        .build()).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
+                doThrow(NoSuchKeyException.class).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
                         builder -> builder.build().bucket().equals("pics") && builder.build().key().equals(failedUploadFile.getOriginalFilename())
                 )));
-                doReturn(HeadObjectResponse.builder()
-                        .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(403).build()))
-                        .build()).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
-                        builder -> builder.build().bucket().equals("pics") && builder.build().key().equals(failedUploadNoMessageFile.getOriginalFilename())
+                doThrow(NoSuchKeyException.class).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
+                        builder -> builder.build().bucket().equals("pics") && builder.build().key().equals(sdkClientFailedFile.getOriginalFilename())
                 )));
-                doReturn(HeadObjectResponse.builder()
-                        .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(403).build()))
-                        .build()).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
+                doThrow(NoSuchKeyException.class).when(s3Client).headObject(argThat(new SdkRequestMatcher<>(HeadObjectRequest.builder(),
                         builder -> builder.build().bucket().equals("pics") && builder.build().key().equals(ioExceptionFile.getOriginalFilename())
                 )));
 
@@ -183,26 +168,20 @@ public class ImageControllerTest extends ControllerTest {
                                                 builder.build().contentType().equals(file2.getContentType()) &&
                                                 builder.build().acl().equals(ObjectCannedACL.PUBLIC_READ))),
                                 argThat(new MultipartMatcher(file2)));
-                doReturn(PutObjectResponse.builder()
-                        .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(500).statusText("It failed!").build()))
-                        .build())
-                        .when(s3Client).putObject(
+                doThrow(S3Exception.create("500 It failed!", null)).when(s3Client).putObject(
                                 argThat(new SdkRequestMatcher<>(PutObjectRequest.builder(),
                                         builder -> builder.build().bucket().equals("pics") &&
                                                 builder.build().key().equals(failedUploadFile.getOriginalFilename()) &&
                                                 builder.build().contentType().equals(failedUploadFile.getContentType()) &&
                                                 builder.build().acl().equals(ObjectCannedACL.PUBLIC_READ))),
                                 argThat(new MultipartMatcher(failedUploadFile)));
-                doReturn(PutObjectResponse.builder()
-                        .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(500).build()))
-                        .build())
-                        .when(s3Client).putObject(
+                doThrow(SdkClientException.create("Client failed")).when(s3Client).putObject(
                                 argThat(new SdkRequestMatcher<>(PutObjectRequest.builder(),
                                         builder -> builder.build().bucket().equals("pics") &&
-                                                builder.build().key().equals(failedUploadNoMessageFile.getOriginalFilename()) &&
-                                                builder.build().contentType().equals(failedUploadNoMessageFile.getContentType()) &&
+                                                builder.build().key().equals(sdkClientFailedFile.getOriginalFilename()) &&
+                                                builder.build().contentType().equals(sdkClientFailedFile.getContentType()) &&
                                                 builder.build().acl().equals(ObjectCannedACL.PUBLIC_READ))),
-                                argThat(new MultipartMatcher(failedUploadNoMessageFile)));
+                                argThat(new MultipartMatcher(sdkClientFailedFile)));
                 doReturn(PutObjectResponse.builder()
                         .applyMutation(m -> m.sdkHttpResponse(SdkHttpResponse.builder().statusCode(500).build()))
                         .build())
@@ -219,13 +198,13 @@ public class ImageControllerTest extends ControllerTest {
                                 .file(file2)
                                 .file(existingFile)
                                 .file(failedUploadFile)
-                                .file(failedUploadNoMessageFile)
+                                .file(sdkClientFailedFile)
                                 .file(ioExceptionFile)
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "all-perms"))))
                                 .with(csrf()))
                         .andExpect(status().isOk())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                        .andExpect(content().json("{\"successful\":[{\"filename\":\"hello.txt\",\"result\":\"https://pics.s3.us-west-2.amazonaws.com/hello.txt\"},{\"filename\":\"hello2.txt\",\"result\":\"https://pics.s3.us-west-2.amazonaws.com/hello2.txt\"}],\"failed\":[{\"filename\":\"hello3.txt\",\"result\":\"File hello3.txt already exists\"},{\"filename\":\"hello4.txt\",\"result\":\"500 It failed!\"},{\"filename\":\"hello5.txt\",\"result\":\"500 No error message\"},{\"filename\":\"hello6.txt\",\"result\":\"File hello6.txt could not be read. Try Again.\"}]}"));
+                        .andExpect(content().json("{\"successful\":[{\"filename\":\"hello.txt\",\"result\":\"https://pics.s3.us-west-2.amazonaws.com/hello.txt\"},{\"filename\":\"hello2.txt\",\"result\":\"https://pics.s3.us-west-2.amazonaws.com/hello2.txt\"}],\"failed\":[{\"filename\":\"hello3.txt\",\"result\":\"File hello3.txt already exists\"},{\"filename\":\"hello4.txt\",\"result\":\"500 It failed!\"},{\"filename\":\"hello5.txt\",\"result\":\"Client failed\"},{\"filename\":\"hello6.txt\",\"result\":\"File hello6.txt could not be read. Try Again.\"}]}"));
             }
         }
     }

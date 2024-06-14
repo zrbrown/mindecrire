@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -37,42 +38,42 @@ public class ImageController {
 
     @PostMapping("/add")
     public ImageUploadResponse addImages(@RequestParam("files") List<MultipartFile> files) {
-        HeadBucketResponse bucketResponse = uploadClient.headBucket(req -> req.bucket(imageBucketConfig.getName()));
-        if (!bucketResponse.sdkHttpResponse().isSuccessful()) {
-            LOG.error("Object storage bucket {} is misconfigured: {}", imageBucketConfig.getName(), bucketResponse.sdkHttpResponse().statusText());
+        HeadBucketResponse bucketResponse;
+        Exception bucketException = null;
+        try {
+            uploadClient.headBucket(req -> req.bucket(imageBucketConfig.getName()));
+        } catch (NoSuchBucketException e) {
+            LOG.error("Object storage bucket {} is misconfigured: {}", imageBucketConfig.getName(), e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server is misconfigured. Cannot upload.");
         }
 
         ImageUploadResponse uploadResponse = new ImageUploadResponse();
 
         for (MultipartFile file : files) {
-            HeadObjectResponse headResponse = uploadClient.headObject(req -> req
-                    .bucket(imageBucketConfig.getName())
-                    .key(file.getOriginalFilename()));
+            try {
+                uploadClient.headObject(req -> req
+                        .bucket(imageBucketConfig.getName())
+                        .key(file.getOriginalFilename()));
 
-            if (headResponse.sdkHttpResponse().isSuccessful()) {
                 uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(),
                         "File " + file.getOriginalFilename() + " already exists"));
-            } else {
+            } catch (NoSuchKeyException e) {
                 try {
-                    PutObjectResponse response = uploadClient.putObject(req -> req
+                    uploadClient.putObject(req -> req
                                     .bucket(imageBucketConfig.getName())
                                     .key(file.getOriginalFilename())
                                     .contentType(file.getContentType())
                                     .acl(ObjectCannedACL.PUBLIC_READ),
                             RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
-                    if (response.sdkHttpResponse().isSuccessful()) {
-                        uploadResponse.getSuccessful().add(new ImageUploadResult(file.getOriginalFilename(),
-                                uploadClient.utilities().getUrl(r -> r.bucket(imageBucketConfig.getName()).key(file.getOriginalFilename())).toExternalForm()));
-                    } else {
-                        uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(),
-                                response.sdkHttpResponse().statusCode() + " " + response.sdkHttpResponse().statusText().orElse("No error message")));
-                    }
-                } catch (IOException e) {
-                    LOG.error("Error reading file to upload", e);
+                    uploadResponse.getSuccessful().add(new ImageUploadResult(file.getOriginalFilename(),
+                            uploadClient.utilities().getUrl(r -> r.bucket(imageBucketConfig.getName()).key(file.getOriginalFilename())).toExternalForm()));
+                } catch (IOException ioException) {
+                    LOG.error("Error reading file to upload", ioException);
                     uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(),
                             "File " + file.getOriginalFilename() + " could not be read. Try Again."));
+                } catch (SdkException sdkException) {
+                    uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(), sdkException.getMessage()));
                 }
             }
         }

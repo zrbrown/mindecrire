@@ -1,7 +1,10 @@
 package net.eightlives.mindecrire.model;
 
+import javax.validation.constraints.NotBlank;
+
 public class FormattedPostUpdate {
 
+    @NotBlank
     private String content;
     private String date;
 

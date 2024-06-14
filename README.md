@@ -343,7 +343,7 @@ objectStorage:
   imageBucket:
     name: images
     url: http://localhost:9000
-    region: nyc3
+    region: us-west-2
     accessKeyId: x
     secretAccessKey: x
 
@@ -351,10 +351,11 @@ site:
   url: http://localhost:8000
 ```
 
-Ensure a local PostgreSQL instance and S3 instance are running before starting the server:
+Ensure a local PostgreSQL instance and S3 instance are running before starting the server (Requires Docker and [awslocal](https://github.com/localstack/awscli-local)):
 
 ```shell
-docker run --detach --rm -p 9000:9000 -p 9001:9001 --name locals3 minio/minio:latest server /data --console-address ":9001"
+docker run --detach --rm -p 4566:4566 localstack/localstack:s3-latest
+awslocal s3api create-bucket --bucket images --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
 docker run --detach --rm -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 --name localdb postgres:10.11
 ```
 

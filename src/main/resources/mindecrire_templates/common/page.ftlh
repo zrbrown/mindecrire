@@ -1,3 +1,25 @@
+<#macro page title="Mindecrire Site" stylesheets=[] scripts=[]>
+<#include "/common_vars.ftlh"/>
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>${title!headTitle!"Mindecrire Site"}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/mindecrire.css">
+    <link rel="stylesheet" href="${customCss}">
+    <#list stylesheets as stylesheet>
+        <link rel="stylesheet" href="${stylesheet}">
+    </#list>
+
+    <#list scripts as script>
+        <script src="${script}"></script>
+    </#list>
+</head>
+
+<body>
 <div class="header">
     <div id="header-logo-container">
         <a href="/blog"><img id="header-logo" src="${headerImage}" alt="Header logo"/></a>
@@ -16,3 +38,7 @@
         </div>
     </div>
 </div>
+<#nested/>
+</body>
+</html>
+</#macro>

@@ -1,11 +1,14 @@
 package net.eightlives.mindecrire.model;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Collections;
 import java.util.List;
 
 public class FormBlogPost {
 
+    @NotBlank
     private String postTitle;
+    @NotBlank
     private String postContent;
     private List<String> addedTags;
 

@@ -207,3 +207,11 @@ button {
 .refresh-button-container {
     text-align: center;
 }
+
+.mindecrire-md-image {
+    max-width: 100%;
+}
+
+.mindecrire-md-paragraph:has(img) {
+    text-align: center;
+}

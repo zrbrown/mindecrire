@@ -25,6 +25,7 @@ public class S3ImageBucketConfig {
                 imageBucketConfig.getAccessKeyId(),
                 imageBucketConfig.getSecretAccessKey());
         return S3Client.builder()
+                .forcePathStyle(true)
                 .endpointOverride(URI.create(imageBucketConfig.getUrl()))
                 .region(Region.of(imageBucketConfig.getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))

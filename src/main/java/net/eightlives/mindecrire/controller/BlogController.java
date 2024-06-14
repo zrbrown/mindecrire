@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -116,7 +117,7 @@ public class BlogController {
 
     @PostMapping("/{postUrlName}/edit")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_EDIT)")
-    public String submitPostEdit(@PathVariable String postUrlName, FormBlogPost blogPost) {
+    public String submitPostEdit(@PathVariable String postUrlName, @Valid FormBlogPost blogPost) {
         postService.getPostByUrlName(postUrlName).ifPresent(post -> postService.editPost(
                 post, blogPost.getPostTitle(), blogPost.getPostContent(), blogPost.getAddedTags()));
 
@@ -139,7 +140,7 @@ public class BlogController {
 
     @PostMapping("/{postUrlName}/update")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_UPDATE)")
-    public String submitPostUpdate(@PathVariable String postUrlName, FormBlogPostUpdate blogPostUpdate) {
+    public String submitPostUpdate(@PathVariable String postUrlName, @Valid FormBlogPostUpdate blogPostUpdate) {
         return postService.getPostByUrlName(postUrlName)
                 .map(post -> {
                     postUpdateService.addPostUpdate(post, blogPostUpdate.getPostContent(), LocalDateTime.now(clock));
@@ -158,7 +159,7 @@ public class BlogController {
 
     @PostMapping("/add")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADD)")
-    public String submitPost(FormBlogPost blogPost, OAuth2AuthenticationToken authentication, Model model, HttpServletResponse response) {
+    public String submitPost(@Valid FormBlogPost blogPost, OAuth2AuthenticationToken authentication, Model model, HttpServletResponse response) {
         try {
             postService.addPost(blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(clock),
                     blogPost.getAddedTags(), authentication);

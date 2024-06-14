@@ -1,22 +1,8 @@
-<#include "/common_vars.ftlh"/>
-<!DOCTYPE html>
+<#import "../common/page.ftlh" as p>
 
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Update Post</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="/css/mindecrire.css">
-    <link rel="stylesheet" href="${customCss}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-</head>
-
-<body>
-<#include "/common/header.ftlh"/>
-
+<@p.page title="Update Post"
+stylesheets=["https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"]
+scripts=["https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"]>
 <div class="content-container">
     <div class="post-title">${postTitle}</div>
     <span class="post-date">${postDate}</span>
@@ -45,6 +31,4 @@
 <script>
     var simplemde = new SimpleMDE({element: document.getElementById("editor")});
 </script>
-
-</body>
-</html>
+</@p.page>

@@ -248,6 +248,8 @@ public class BlogControllerTest extends ControllerTest {
             @Test
             void submitPost() throws Exception {
                 mvc.perform(post("/blog/add")
+                                .param("postTitle", "Edited Title")
+                                .param("postContent", "Edited content.")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "no-add"))))
                                 .with(csrf()))
                         .andExpect(status().isForbidden());
@@ -332,6 +334,28 @@ public class BlogControllerTest extends ControllerTest {
                         .andExpect(model().attribute("submitPath", "/blog/add"))
                         .andExpect(model().attribute("ajaxBaseUrl", "https://myblog.com"))
                         .andExpect(model().attribute("validationMessage", "A post with this title already exists. Use a different title."));
+            }
+
+            @DisplayName("POST /blog/add when title is blank")
+            @Test
+            void submitPostBlankTitle() throws Exception {
+                mvc.perform(post("/blog/add")
+                                .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "add"))))
+                                .with(csrf())
+                                .param("postTitle", "")
+                                .param("postContent", "Stuff about stuff."))
+                        .andExpect(status().isBadRequest());
+            }
+
+            @DisplayName("POST /blog/add when content is blank")
+            @Test
+            void submitPostBlankContent() throws Exception {
+                mvc.perform(post("/blog/add")
+                                .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "add"))))
+                                .with(csrf())
+                                .param("postTitle", "New Test Post!")
+                                .param("postContent", ""))
+                        .andExpect(status().isBadRequest());
             }
 
             @DisplayName("POST /blog/add when author does not exist")
@@ -425,6 +449,8 @@ public class BlogControllerTest extends ControllerTest {
             @Test
             void submitPostEdit() throws Exception {
                 mvc.perform(post("/blog/" + todayPost.getUrlName() + "/edit")
+                                .param("postTitle", "Edited Title")
+                                .param("postContent", "Edited content.")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "no-edit-or-post-admin"))))
                                 .with(csrf()))
                         .andExpect(status().isForbidden());
@@ -536,6 +562,34 @@ public class BlogControllerTest extends ControllerTest {
                 assertTrue(tags.stream().map(Tag::getName).collect(Collectors.toList()).contains("games"));
             }
 
+            @DisplayName("POST /blog/test-post/edit with blank title")
+            @ParameterizedTest(name = "with authorization {0}")
+            @CsvSource({"edit", "post-admin"})
+            void submitPostEditBlankTitle(String login) throws Exception {
+                tagRepository.save(createTag("recipes", todayPost));
+
+                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/edit")
+                                .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login))))
+                                .with(csrf())
+                                .param("postTitle", "")
+                                .param("postContent", "Edited content."))
+                        .andExpect(status().isBadRequest());
+            }
+
+            @DisplayName("POST /blog/test-post/edit with blank content")
+            @ParameterizedTest(name = "with authorization {0}")
+            @CsvSource({"edit", "post-admin"})
+            void submitPostEditBlankContent(String login) throws Exception {
+                tagRepository.save(createTag("recipes", todayPost));
+
+                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/edit")
+                                .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login))))
+                                .with(csrf())
+                                .param("postTitle", "Edited Title")
+                                .param("postContent", ""))
+                        .andExpect(status().isBadRequest());
+            }
+
             @DisplayName("POST /blog/not-real/edit when post is missing with authorization edit")
             @Test
             void submitPostEditMissing() throws Exception {
@@ -610,6 +664,7 @@ public class BlogControllerTest extends ControllerTest {
             @Test
             void submitPostEdit() throws Exception {
                 mvc.perform(post("/blog/" + todayPost.getUrlName() + "/update")
+                                .param("postContent", "Edited content.")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "no-update-or-post-admin"))))
                                 .with(csrf()))
                         .andExpect(status().isForbidden());
@@ -706,6 +761,17 @@ public class BlogControllerTest extends ControllerTest {
                 assertEquals(1, updates.size());
                 assertEquals("This is an update to the post!", updates.get(0).getContent());
                 assertEquals(NOW, updates.get(0).getUpdatedDateTime());
+            }
+
+            @DisplayName("POST /blog/test-post/update with blank content")
+            @ParameterizedTest(name = "with authorization {0}")
+            @CsvSource({"update", "post-admin"})
+            void submitPostUpdateBlankContent(String login) throws Exception {
+                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/update")
+                                .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login))))
+                                .with(csrf())
+                                .param("postContent", ""))
+                        .andExpect(status().isBadRequest());
             }
         }
     }
