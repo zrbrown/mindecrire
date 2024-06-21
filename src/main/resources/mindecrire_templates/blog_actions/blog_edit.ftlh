@@ -20,7 +20,7 @@ scripts=["https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js", "https://
         <ul id="uploadedImagesList" title="Uploaded Images">
         </ul>
         <input title="Tag name entry" type="text" class="add-tag-text" name="addTag" id="addTagInput"/>
-        <button title="Add tag" type="button" onclick="addTagToTags()">Add tag</button>
+        <button title="Add Tag" type="button" onclick="addTagToTags()">Add tag</button>
         <div class="tag-container" id="tagContainer">
             <#if tags??>
                 <#list tags as tag>

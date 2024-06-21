@@ -91,10 +91,10 @@ public class BlogControllerTest extends ControllerTest {
                         .andExpect(view().name("blog_page"));
             }
 
-            @DisplayName("GET /blog/test-post")
+            @DisplayName("GET /blog/post/test-post")
             @Test
             void postMissing() throws Exception {
-                mvc.perform(get("/blog/test-post"))
+                mvc.perform(get("/blog/post/test-post"))
                         .andExpect(status().isFound())
                         .andExpect(view().name("redirect:/blog"));
             }
@@ -116,13 +116,13 @@ public class BlogControllerTest extends ControllerTest {
             void latestPost() throws Exception {
                 mvc.perform(get("/blog"))
                         .andExpect(status().isFound())
-                        .andExpect(view().name("redirect:/blog/test-post"));
+                        .andExpect(view().name("redirect:/blog/post/test-post"));
             }
 
             @DisplayName("GET /blog/test-post")
             @Test
             void post() throws Exception {
-                mvc.perform(get("/blog/test-post"))
+                mvc.perform(get("/blog/post/test-post"))
                         .andExpect(status().isOk())
                         .andExpect(view().name("blog_page"))
                         .andExpect(model().attribute("postUpdates", hasSize(0)))
@@ -136,27 +136,27 @@ public class BlogControllerTest extends ControllerTest {
             }
 
             @DisplayName("when other posts exist")
-            @ParameterizedTest(name = "GET /blog/{0} (previous: {1}) (next: {2})")
+            @ParameterizedTest(name = "GET /blog/post/{0} (previous: {1}) (next: {2})")
             @CsvSource({"test-post,true,false", "test-post-kinda-old,true,true", "test-post-old,false,true"})
             void postWithOtherPosts(String urlName, boolean showPrevious, boolean showNext) throws Exception {
                 postRepository.save(new Post(UUID.randomUUID(), "test-post-old", "Test Post Old", "A long long time ago...", LAST_YEAR, Set.of(), author));
                 postRepository.save(new Post(UUID.randomUUID(), "test-post-kinda-old", "Test Post Kinda Old", "Today, it was sunny.", YESTERDAY, Set.of(), author));
 
-                mvc.perform(get("/blog/" + urlName))
+                mvc.perform(get("/blog/post/" + urlName))
                         .andExpect(status().isOk())
                         .andExpect(view().name("blog_page"))
                         .andExpect(model().attribute("showPrevious", showPrevious))
                         .andExpect(model().attribute("showNext", showNext));
             }
 
-            @DisplayName("GET /blog/test-post when post has tags")
+            @DisplayName("GET /blog/post/test-post when post has tags")
             @Test
             void postWithTags() throws Exception {
                 List<Tag> tags = tagRepository.saveAll(List.of(
                         createTag("cool", todayPost),
                         createTag("Programming", todayPost)));
 
-                mvc.perform(get("/blog/test-post"))
+                mvc.perform(get("/blog/post/test-post"))
                         .andExpect(status().isOk())
                         .andExpect(view().name("blog_page"))
                         .andExpect(model().attribute("postUpdates", hasSize(0)))
@@ -169,7 +169,7 @@ public class BlogControllerTest extends ControllerTest {
                         .andExpect(model().attribute("showNext", false));
             }
 
-            @DisplayName("GET /blog/test-post when post has updates")
+            @DisplayName("GET /blog/post/test-post when post has updates")
             @Test
             void postWithUpdates() throws Exception {
                 List<PostUpdate> postUpdates = List.of(
@@ -185,7 +185,7 @@ public class BlogControllerTest extends ControllerTest {
                         new FormattedPostUpdate("<p>UPDATE: stuff</p>\n", DateTimeFormatter.ISO_LOCAL_DATE.format(postUpdates.get(0).getUpdatedDateTime()))
                 );
 
-                mvc.perform(get("/blog/test-post"))
+                mvc.perform(get("/blog/post/test-post"))
                         .andExpect(status().isOk())
                         .andExpect(view().name("blog_page"))
                         .andExpect(model().attribute("postUpdates", contains(
@@ -417,17 +417,17 @@ public class BlogControllerTest extends ControllerTest {
         @Nested
         class Unauthenticated {
 
-            @DisplayName("GET /blog/test-post/edit")
+            @DisplayName("GET /blog/edit/test-post")
             @Test
             void editPost() throws Exception {
-                mvc.perform(get("/blog/" + todayPost.getUrlName() + "/edit"))
+                mvc.perform(get("/blog/edit/" + todayPost.getUrlName()))
                         .andExpect(status().isFound());
             }
 
-            @DisplayName("POST /blog/test-post/edit")
+            @DisplayName("POST /blog/edit/test-post")
             @Test
             void submitPostEdit() throws Exception {
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/edit")
+                mvc.perform(post("/blog/edit/" + todayPost.getUrlName())
                                 .with(csrf()))
                         .andExpect(status().isFound());
             }
@@ -437,18 +437,18 @@ public class BlogControllerTest extends ControllerTest {
         @Nested
         class Unauthorized {
 
-            @DisplayName("GET /blog/test-post/edit")
+            @DisplayName("GET /blog/edit/test-post")
             @Test
             void editPost() throws Exception {
-                mvc.perform(get("/blog/" + todayPost.getUrlName() + "/edit")
+                mvc.perform(get("/blog/edit/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "no-edit-or-post-admin")))))
                         .andExpect(status().isForbidden());
             }
 
-            @DisplayName("POST /blog/test-post/edit")
+            @DisplayName("POST /blog/edit/test-post")
             @Test
             void submitPostEdit() throws Exception {
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/edit")
+                mvc.perform(post("/blog/edit/" + todayPost.getUrlName())
                                 .param("postTitle", "Edited Title")
                                 .param("postContent", "Edited content.")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "no-edit-or-post-admin"))))
@@ -461,33 +461,33 @@ public class BlogControllerTest extends ControllerTest {
         @Nested
         class Authorized {
 
-            @DisplayName("GET /blog/test-post/edit")
+            @DisplayName("GET /blog/edit/test-post")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"edit", "post-admin"})
             void editPost(String login) throws Exception {
-                mvc.perform(get("/blog/" + todayPost.getUrlName() + "/edit")
+                mvc.perform(get("/blog/edit/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login)))))
                         .andExpect(status().isOk())
                         .andExpect(model().attribute("postTitle", todayPost.getTitle()))
                         .andExpect(model().attribute("postContent", todayPost.getContent()))
-                        .andExpect(model().attribute("submitPath", "/blog/" + todayPost.getUrlName() + "/edit"))
+                        .andExpect(model().attribute("submitPath", "/blog/edit/" + todayPost.getUrlName()))
                         .andExpect(model().attribute("ajaxBaseUrl", "https://myblog.com"))
                         .andExpect(model().attribute("tags", hasSize(0)))
                         .andExpect(view().name("blog_actions/blog_edit"));
             }
 
-            @DisplayName("GET /blog/test-post/edit when post has tags")
+            @DisplayName("GET /blog/edit/test-post when post has tags")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"edit", "post-admin"})
             void editPostWithTags(String login) throws Exception {
                 List<Tag> tags = tagRepository.saveAll(List.of(createTag("programming", todayPost), createTag("Java", todayPost)));
 
-                mvc.perform(get("/blog/" + todayPost.getUrlName() + "/edit")
+                mvc.perform(get("/blog/edit/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login)))))
                         .andExpect(status().isOk())
                         .andExpect(model().attribute("postTitle", todayPost.getTitle()))
                         .andExpect(model().attribute("postContent", todayPost.getContent()))
-                        .andExpect(model().attribute("submitPath", "/blog/" + todayPost.getUrlName() + "/edit"))
+                        .andExpect(model().attribute("submitPath", "/blog/edit/" + todayPost.getUrlName()))
                         .andExpect(model().attribute("ajaxBaseUrl", "https://myblog.com"))
                         .andExpect(model().attribute("tags", containsInAnyOrder(tags.stream().map(Tag::getName).toArray())))
                         .andExpect(view().name("blog_actions/blog_edit"));
@@ -496,7 +496,7 @@ public class BlogControllerTest extends ControllerTest {
             @DisplayName("GET /blog/not-real/edit when post is missing with authorization edit")
             @Test
             void editPostMissing() throws Exception {
-                mvc.perform(get("/blog/not-real/edit")
+                mvc.perform(get("/blog/edit/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "edit")))))
                         .andExpect(status().isForbidden());
             }
@@ -504,19 +504,19 @@ public class BlogControllerTest extends ControllerTest {
             @DisplayName("GET /blog/not-real/edit when post is missing with authorization post-admin")
             @Test
             void editPostMissingAdmin() throws Exception {
-                mvc.perform(get("/blog/not-real/edit")
+                mvc.perform(get("/blog/edit/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "post-admin")))))
                         .andExpect(status().isFound())
                         .andExpect(view().name("redirect:/blog"));
             }
 
-            @DisplayName("POST /blog/test-post/edit")
+            @DisplayName("POST /blog/edit/test-post")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"edit", "post-admin"})
             void submitPostEdit(String login) throws Exception {
                 tagRepository.save(createTag("recipes", todayPost));
 
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/edit")
+                mvc.perform(post("/blog/edit/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login))))
                                 .with(csrf())
                                 .param("postTitle", "Edited Title")
@@ -534,14 +534,14 @@ public class BlogControllerTest extends ControllerTest {
                 assertTrue(tags.stream().map(Tag::getName).collect(Collectors.toList()).contains("recipes"));
             }
 
-            @DisplayName("POST /blog/test-post/edit when adding tags")
+            @DisplayName("POST /blog/edit/test-post when adding tags")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"edit", "post-admin"})
             void submitPostEditWithTags(String login) throws Exception {
                 tagRepository.save(createTag("recipes", todayPost));
                 tagRepository.save(createTag("games"));
 
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/edit")
+                mvc.perform(post("/blog/edit/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login))))
                                 .with(csrf())
                                 .param("postTitle", "Edited Title")
@@ -562,13 +562,13 @@ public class BlogControllerTest extends ControllerTest {
                 assertTrue(tags.stream().map(Tag::getName).collect(Collectors.toList()).contains("games"));
             }
 
-            @DisplayName("POST /blog/test-post/edit with blank title")
+            @DisplayName("POST /blog/edit/test-post with blank title")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"edit", "post-admin"})
             void submitPostEditBlankTitle(String login) throws Exception {
                 tagRepository.save(createTag("recipes", todayPost));
 
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/edit")
+                mvc.perform(post("/blog/edit/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login))))
                                 .with(csrf())
                                 .param("postTitle", "")
@@ -576,13 +576,13 @@ public class BlogControllerTest extends ControllerTest {
                         .andExpect(status().isBadRequest());
             }
 
-            @DisplayName("POST /blog/test-post/edit with blank content")
+            @DisplayName("POST /blog/edit/test-post with blank content")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"edit", "post-admin"})
             void submitPostEditBlankContent(String login) throws Exception {
                 tagRepository.save(createTag("recipes", todayPost));
 
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/edit")
+                mvc.perform(post("/blog/edit/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login))))
                                 .with(csrf())
                                 .param("postTitle", "Edited Title")
@@ -593,7 +593,7 @@ public class BlogControllerTest extends ControllerTest {
             @DisplayName("POST /blog/not-real/edit when post is missing with authorization edit")
             @Test
             void submitPostEditMissing() throws Exception {
-                mvc.perform(post("/blog/not-real/edit")
+                mvc.perform(post("/blog/edit/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "edit"))))
                                 .with(csrf())
                                 .param("postTitle", "New Test Post!")
@@ -604,7 +604,7 @@ public class BlogControllerTest extends ControllerTest {
             @DisplayName("POST /blog/not-real/edit when post is missing with authorization post-admin")
             @Test
             void submitPostEditMissingPostAdmin() throws Exception {
-                mvc.perform(post("/blog/not-real/edit")
+                mvc.perform(post("/blog/edit/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "post-admin"))))
                                 .with(csrf())
                                 .param("postTitle", "New Test Post!")
@@ -632,17 +632,17 @@ public class BlogControllerTest extends ControllerTest {
         @Nested
         class Unauthenticated {
 
-            @DisplayName("GET /blog/test-post/update")
+            @DisplayName("GET /blog/update/test-post")
             @Test
             void updatePost() throws Exception {
-                mvc.perform(get("/blog/" + todayPost.getUrlName() + "/update"))
+                mvc.perform(get("/blog/update/" + todayPost.getUrlName()))
                         .andExpect(status().isFound());
             }
 
-            @DisplayName("POST /blog/test-post/update")
+            @DisplayName("POST /blog/update/test-post")
             @Test
             void submitPostUpdate() throws Exception {
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/update")
+                mvc.perform(post("/blog/update/" + todayPost.getUrlName())
                                 .with(csrf()))
                         .andExpect(status().isFound());
             }
@@ -652,18 +652,18 @@ public class BlogControllerTest extends ControllerTest {
         @Nested
         class Unauthorized {
 
-            @DisplayName("GET /blog/test-post/update")
+            @DisplayName("GET /blog/update/test-post")
             @Test
             void editPost() throws Exception {
-                mvc.perform(get("/blog/" + todayPost.getUrlName() + "/update")
+                mvc.perform(get("/blog/update/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "no-update-or-post-admin")))))
                         .andExpect(status().isForbidden());
             }
 
-            @DisplayName("POST /blog/test-post/update")
+            @DisplayName("POST /blog/update/test-post")
             @Test
             void submitPostEdit() throws Exception {
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/update")
+                mvc.perform(post("/blog/update/" + todayPost.getUrlName())
                                 .param("postContent", "Edited content.")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "no-update-or-post-admin"))))
                                 .with(csrf()))
@@ -675,28 +675,28 @@ public class BlogControllerTest extends ControllerTest {
         @Nested
         class Authorized {
 
-            @DisplayName("GET /blog/test-post/update when post is missing with authorization update")
+            @DisplayName("GET /blog/update/test-post when post is missing with authorization update")
             @Test
             void updatePostMissing() throws Exception {
-                mvc.perform(get("/blog/not-real/update")
+                mvc.perform(get("/blog/update/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "update")))))
                         .andExpect(status().isForbidden());
             }
 
-            @DisplayName("GET /blog/test-post/update when post is missing with authorization post-admin")
+            @DisplayName("GET /blog/update/test-post when post is missing with authorization post-admin")
             @Test
             void updatePostMissingAdmin() throws Exception {
-                mvc.perform(get("/blog/not-real/update")
+                mvc.perform(get("/blog/update/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "post-admin")))))
                         .andExpect(status().isFound())
                         .andExpect(view().name("redirect:/blog"));
             }
 
-            @DisplayName("GET /blog/test-post/update")
+            @DisplayName("GET /blog/update/test-post")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"update", "post-admin"})
             void updatePost(String login) throws Exception {
-                mvc.perform(get("/blog/" + todayPost.getUrlName() + "/update")
+                mvc.perform(get("/blog/update/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login)))))
                         .andExpect(status().isOk())
                         .andExpect(model().attribute("postTitle", todayPost.getTitle()))
@@ -707,13 +707,13 @@ public class BlogControllerTest extends ControllerTest {
                         .andExpect(view().name("blog_actions/blog_update"));
             }
 
-            @DisplayName("GET /blog/test-post/update when post has tags")
+            @DisplayName("GET /blog/update/test-post when post has tags")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"update", "post-admin"})
             void updatePostWithTags(String login) throws Exception {
                 List<Tag> tags = tagRepository.saveAll(List.of(createTag("board games", todayPost), createTag("games", todayPost)));
 
-                mvc.perform(get("/blog/" + todayPost.getUrlName() + "/update")
+                mvc.perform(get("/blog/update/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login)))))
                         .andExpect(status().isOk())
                         .andExpect(model().attribute("postTitle", todayPost.getTitle()))
@@ -721,24 +721,24 @@ public class BlogControllerTest extends ControllerTest {
                         .andExpect(model().attribute("postAuthor", author.getDisplayName()))
                         .andExpect(model().attribute("postContent", "<p class=\"mindecrire-md-paragraph\">nothing here</p>\n"))
                         .andExpect(model().attribute("tags", containsInAnyOrder(tags.stream().map(Tag::getName).toArray())))
-                        .andExpect(model().attribute("submitPath", "/blog/" + todayPost.getUrlName() + "/update"))
+                        .andExpect(model().attribute("submitPath", "/blog/update/" + todayPost.getUrlName()))
                         .andExpect(view().name("blog_actions/blog_update"));
             }
 
-            @DisplayName("POST /blog/test-post/update when post is missing with authorization update")
+            @DisplayName("POST /blog/update/test-post when post is missing with authorization update")
             @Test
             void submitPostUpdateMissing() throws Exception {
-                mvc.perform(post("/blog/not-real/update")
+                mvc.perform(post("/blog/update/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "update"))))
                                 .with(csrf())
                                 .param("postContent", "This is an update to the post!"))
                         .andExpect(status().isForbidden());
             }
 
-            @DisplayName("POST /blog/test-post/update when post is missing with authorization post-admin")
+            @DisplayName("POST /blog/update/test-post when post is missing with authorization post-admin")
             @Test
             void submitPostUpdateMissingPostAdmin() throws Exception {
-                mvc.perform(post("/blog/not-real/update")
+                mvc.perform(post("/blog/update/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "post-admin"))))
                                 .with(csrf())
                                 .param("postContent", "This is an update to the post!"))
@@ -746,11 +746,11 @@ public class BlogControllerTest extends ControllerTest {
                         .andExpect(view().name("redirect:/blog/not-real"));
             }
 
-            @DisplayName("POST /blog/test-post/update")
+            @DisplayName("POST /blog/update/test-post")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"update", "post-admin"})
             void submitPostUpdate(String login) throws Exception {
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/update")
+                mvc.perform(post("/blog/update/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login))))
                                 .with(csrf())
                                 .param("postContent", "This is an update to the post!"))
@@ -763,11 +763,11 @@ public class BlogControllerTest extends ControllerTest {
                 assertEquals(NOW, updates.get(0).getUpdatedDateTime());
             }
 
-            @DisplayName("POST /blog/test-post/update with blank content")
+            @DisplayName("POST /blog/update/test-post with blank content")
             @ParameterizedTest(name = "with authorization {0}")
             @CsvSource({"update", "post-admin"})
             void submitPostUpdateBlankContent(String login) throws Exception {
-                mvc.perform(post("/blog/" + todayPost.getUrlName() + "/update")
+                mvc.perform(post("/blog/update/" + todayPost.getUrlName())
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", login))))
                                 .with(csrf())
                                 .param("postContent", ""))

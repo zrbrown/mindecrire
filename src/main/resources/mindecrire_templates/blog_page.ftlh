@@ -1,6 +1,6 @@
 <#import "./common/page.ftlh" as p>
 
-<@p.page title!headTitle>
+<@p.page postTitle>
 <div class="content-container">
     <div class="post-title">${postTitle!}</div>
     <#if postUpdates??>
@@ -27,10 +27,10 @@
     </#if>
     <div class="navigation-buttons">
         <#if showPrevious?? && showPrevious>
-            <div class="previous-post"><a href="/blog/${previousPost}">&larr; Older</a></div>
+            <div class="previous-post"><a href="/blog/post/${previousPost}">&larr; Older</a></div>
         </#if>
         <#if showNext?? && showNext>
-            <div class="next-post"><a href="/blog/${nextPost}">Newer &rarr;</a></div>
+            <div class="next-post"><a href="/blog/post/${nextPost}">Newer &rarr;</a></div>
         </#if>
     </div>
 </div>

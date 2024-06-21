@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Clock;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,6 +30,14 @@ public class StaticContentControllerTest extends ControllerTest {
         mvc.perform(get("/not-exist"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(status().reason("Server misconfigured"));
+    }
+
+    @DisplayName("GET /favicon.ico shouldn't hit this endpoint, but instead return the favicon")
+    @Test
+    void staticContentFavicon() throws Exception {
+        mvc.perform(get("/favicon.ico"))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(Files.readAllBytes(Paths.get("src","test","resources","static","favicon.ico"))));
     }
 
     @DisplayName("GET /projects and /about successfully")

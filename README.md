@@ -4,6 +4,50 @@ A framework for creating a blog site along with static pages.
 
 ## How to use
 
+### `/`
+
+Redirects to `/blog`.
+
+### `/blog`
+
+Redirects to the latest blog post. If there are no blog posts, a blank blog page is displayed.
+
+### `/blog/post/post-title`
+
+Display a blog post (here, `post-title`).
+
+### `/blog/add`
+
+Add a new blog post. The markdown editor can be used to create a post. Tags can be added using the "Add Tag" field and
+button. Tags can be removed by clicking the "x" next to the tag name. Images can be uploaded to object storage by
+clicking the "Add Images" button (one or many can be selected at once). Once uploaded, a link will appear with the file
+name. Click the link to copy the location formatted as a markdown image to paste into the editor. Click the trash can
+icon to delete the image from object storage. If an image upload fails, its link will appear red with two icons. The
+minus icon will cancel the upload (really just removing it from the list on screen). The circular arrow icon will retry
+the upload. Hovering over the link will display the error message in a tooltip. An added post can be navigated to by
+its title translated to kebab-case (e.g. "Post Title" becomes "post-title").
+
+### `/blog/edit/post-title`
+
+Edit a blog post (here, `post-title`). There will be no indication if a post was updated, so use this to fix things
+like typos.
+
+### `/blog/update/post-title`
+
+Update a blog post (here, `post-title`). Updates will appear on a blog post, latest first, in a box at the top.
+
+### `/page`
+
+Display a static page. All static pages are listed on the left of the top navigation bar.
+
+### `/refresh`
+
+Display a page with a Refresh link that will refresh the Spring context (All this does is call `/actuator/refresh`).
+This is useful when the configuration needs to be updated without restarting the server. This can be useful when doing
+things like adding a new static page or adding users and changing permissions.
+
+## How to build
+
 ### POM
 
 Add Mindecrire as a compile dependency and your database driver as a runtime dependency. If you are using PostgreSQL,
@@ -105,9 +149,6 @@ Minimal example using PostgreSQL and Flyway:
 
 #### Database
 
-- `spring.jpa.properties.hibernate.default_schema`: Set this to a schema name that will be used for the database. This is
-useful because one hosted database can be used for multiple Mindecrire applications, saving on resources. This only
-works for databases that support schemas, like PostgreSQL.
 - `spring.flyway.locations`: If you are using Flyway (see [POM](#pom)) but don't want to use the Mindecrire migration
 scripts (or are using a database other than PostgreSQL and need to use a different dialect), set this to the location.
 
@@ -141,33 +182,48 @@ Static pages can be added by creating a markdown (`.md`) file in `src/main/resou
 adding the filename without the extension as the key and title to display on the page as the value, e.g.:
 
 ```yaml
-  staticContent.markdownToName:
-    projects: My Projects
-    about: About
+staticContent.markdownToName:
+  projects: My Projects
+  about: About
 ```
 
 This would create a page at `site.com/projects` with the title "My Projects" and a page at `site.com/about` with the title "About".
+
+#### Friendly SSL
+
+Mindecrire uses [Friendly SSL](https://github.com/zrbrown/friendly-ssl) to automatically manage the site's TLS/SSL
+certificate. At a minimum, the domain and account email must be provided:
+
+```yaml
+friendly-ssl:
+  domain: my-website.com
+  account-email: youremail@provider.com
+```
 
 #### Production
 
 In production, copy below into `production.yml` (or equivalent `production.properties`) in the project root directory and enter secrets:
 
 ```yaml
-  spring:
-    datasource:
-      url: x
-      username: x
-      password: x
-    spring.security.oauth2.client.registration.github.client-id: x
-    security.oauth2.client.registration.github.client-secret: x
+spring:
+  datasource:
+    url: x
+    username: x
+    password: x
+  spring.security.oauth2.client.registration.github.client-id: x
+  security.oauth2.client.registration.github.client-secret: x
 
-  objectStorage:
-    imageBucket:
-      accessKeyId: x
-      secretAccessKey: x
+objectStorage:
+  imageBucket:
+    accessKeyId: x
+    secretAccessKey: x
 
-  spring.profiles.include:
-    - ssl-redirect
+friendly-ssl:
+  acme-session-url: acme://letsencrypt.org
+  auto-renew-enabled: true
+
+spring.profiles.include:
+  - ssl-redirect
 ```
 
 The `ssl-redirect` profile redirects HTTP traffic to HTTPS.
@@ -175,6 +231,15 @@ The `ssl-redirect` profile redirects HTTP traffic to HTTPS.
 `spring.security.oauth2.client.registration.github.*`: While `github` is used here, any of Spring's supported
 OAuth2 providers can be used. If you use another authorization provider, ensure it is changed here. Using Github
 requires creating a Github App and generating a client secret.
+
+##### Friendly SSL
+
+`friendly-ssl.auto-renew-enabled` will configure Friendly SSL to automatically renew the TLS/SSL certificate at the
+default time before its expiration. If you don't want this, remove that property or set it to `false`.
+
+See [Friendly SSL](https://github.com/zrbrown/friendly-ssl) for more configuration options. Note that the manual
+certificate renewal and TOS agreement endpoints are disabled by default, so these  operations (particularly agreeing
+to TOS) will require server access.
 
 ### CSS
 
@@ -259,13 +324,13 @@ These are all required to be defined except for `headTitle`:
 ]>
 ```
 
-| Variable    | Description                                                                                                                                       |
-|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| headTitle   | The title that will be used if a given page doesn't set one.                                                                                      |
-| customCss   | CSS file that contains overrides and any other custom CSS.                                                                                        |
-| headerImage | Image displayed to the left of the page header.                                                                                                   |
-| navLinks    | List of links in the navigation bar of the page header. Format: Relative link ("/example"), Display Name ("Example")                              |
-| headerIcons | Icons displayed on the right of the page header. Format: URL ("//github.com/username"), Alt Text ("Github"), Font Awesome icon name ("fa-github") |
+| Variable    | Description                                                                                                                                              |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| headTitle   | The title that will be used if a given page doesn't set one.                                                                                             |
+| customCss   | CSS file that contains overrides and any other custom CSS.                                                                                               |
+| headerImage | Image displayed to the left of the page header.                                                                                                          |
+| navLinks    | List of links in the navigation bar of the page header. Format: Relative link ("/example"), Display Name ("Example")                                     |
+| headerIcons | Icons displayed on the right of the page header. Format: URL ("//github.com/username"), Alt Text ("Github"), Image location ("/images/bluesky-icon.svg") |
 
 `headerIcons` can refer to any image. If SVG or PNG images are used, they can be uniformly colored by setting the
 `filter` CSS property to the `headerIcon` class:
@@ -324,8 +389,9 @@ See [Docker](#docker) for an example.
 
 #### Running Locally
 
-To run locally, a `local.yml` file is useful (run with `-Dspring.config.name=local`):
+To run locally, a `local.yml` and `local-secrets.yml` (add to `.gitignore`!) file is useful:
 
+`local.yml`
 ```yaml
 server:
   port: 8000
@@ -333,11 +399,9 @@ server:
     enabled: false
 
 spring:
-  datasource.url: jdbc:postgresql://localhost:5432/schemaname
+  datasource.url: jdbc:postgresql://localhost:5432/databasename
   datasource.username: postgres
   datasource.password: postgres
-  security.oauth2.client.registration.github.client-id: x
-  security.oauth2.client.registration.github.client-secret: x
 
 objectStorage:
   imageBucket:
@@ -349,17 +413,27 @@ objectStorage:
 
 site:
   url: http://localhost:8000
+
+userAuthorization.userPermissions:
+  bob: ADMIN, POST_ADMIN, POST_ADD, POST_EDIT, POST_UPDATE
+```
+
+`local-secrets.yml`
+```yaml
+spring:
+  security.oauth2.client.registration.github.client-id: your-id
+  security.oauth2.client.registration.github.client-secret: your-secret
 ```
 
 Ensure a local PostgreSQL instance and S3 instance are running before starting the server (Requires Docker and [awslocal](https://github.com/localstack/awscli-local)):
 
 ```shell
-docker run --detach --rm -p 4566:4566 localstack/localstack:s3-latest
+docker run --detach --rm -p 4566:4566 --name locals3 localstack/localstack:s3-latest
 awslocal s3api create-bucket --bucket images --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
 docker run --detach --rm -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 --name localdb postgres:10.11
 ```
 
-Run with Spring profiles `mindecrire,local`.
+Run with VM argument `-Dspring.config.name=mindecrire,application,local,local-secrets`.
 
 #### Docker
 

@@ -1,7 +1,3 @@
-CREATE SCHEMA IF NOT EXISTS application;
-
-SET SEARCH_PATH TO application;
-
 CREATE TABLE IF NOT EXISTS author_details
 (
     id           UUID PRIMARY KEY,

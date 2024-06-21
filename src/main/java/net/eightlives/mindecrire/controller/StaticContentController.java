@@ -36,7 +36,7 @@ public class StaticContentController {
         this.attributeProviderFactory = attributeProviderFactory;
     }
 
-    @GetMapping("/{markdown}")
+    @GetMapping("/{markdown:^(?!favicon\\.ico$).*}")
     public String content(@PathVariable String markdown, Model model) {
         if (staticContentConfig.getMarkdownToName() != null &&
                 staticContentConfig.getMarkdownToName().containsKey(markdown)) {

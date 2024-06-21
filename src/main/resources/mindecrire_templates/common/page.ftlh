@@ -1,11 +1,11 @@
-<#macro page title="Mindecrire Site" stylesheets=[] scripts=[]>
+<#macro page title=headTitle!"Mindecrire Site" stylesheets=[] scripts=[]>
 <#include "/common_vars.ftlh"/>
 <!DOCTYPE html>
 
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>${title!headTitle!"Mindecrire Site"}</title>
+    <title>${title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="/css/mindecrire.css">

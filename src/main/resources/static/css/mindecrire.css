@@ -183,8 +183,14 @@ button {
     cursor: pointer;
 }
 
-.file-action-icon:hover {
-    color: #FF0000;
+.file-action-icon > img:hover {
+    filter: invert(23%) sepia(89%) saturate(7173%) hue-rotate(2deg) brightness(100%) contrast(127%);
+}
+
+.file-action-icon > img {
+    max-height: 1em;
+    vertical-align: middle;
+    padding: .3em 0 .3em 0;
 }
 
 .file-link-list-item:hover {

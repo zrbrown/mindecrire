@@ -59,7 +59,7 @@ function handleFileSelect(target, csrfName, csrfHeaderName, csrfToken) {
 }
 
 function handleCopyLinkClicked(target) {
-    navigator.clipboard.writeText(target.getAttribute("data"))
+    navigator.clipboard.writeText("![](" + target.getAttribute("data") + ")")
         .catch(error => {
             uploadedImagesList.appendChild(error);
         });
@@ -123,7 +123,7 @@ function createSuccessfulUploadListItem(successfulUpload, csrfHeaderName, csrfTo
     uploadedImageLink.setAttribute("data", successfulUpload.result);
     uploadedImageListItem.appendChild(uploadedImageLink);
 
-    let deleteLink = createLink("Delete", "fa fa-trash file-action-icon",
+    let deleteLink = createImageLink("/mindecrire_images/trash.svg", "Delete", "file-action-icon",
         () => handleDeleteUploadedImageClicked(
             uploadedImageListItem,
             successfulUpload.filename,
@@ -142,12 +142,12 @@ function createFailedUploadListItem(failedUpload, failedUploadFile, csrfName, cs
         failedUpload.result, "file-link failed-file-link", () => "");
     failedImageListItem.appendChild(uploadedImageLink);
 
-    let cancelLink = createLink("Cancel", "fa fa-minus-circle file-action-icon",
+    let cancelLink = createImageLink("/mindecrire_images/minus-circle.svg", "Cancel", "file-action-icon",
         () => handleCancelFailedImageClicked(cancelLink));
     failedImageListItem.appendChild(cancelLink);
 
     if (failedUploadFile) {
-        let retryLink = createLink("Retry", "fa fa-refresh file-action-icon",
+        let retryLink = createImageLink("/mindecrire_images/refresh.svg", "Retry", "file-action-icon",
             () => handleRetryImageUploadClicked(
                 failedImageListItem,
                 failedUploadFile,
@@ -175,5 +175,15 @@ function createTextLink(text, title, styleClass, callback) {
     let link = createLink(title, styleClass, callback);
     link.appendChild(document.createTextNode(text));
 
+    return link;
+}
+
+function createImageLink(imageSrc, title, styleClass, callback) {
+    let link = createLink(title, styleClass, callback);
+
+    let image = document.createElement("img");
+    image.setAttribute("src", imageSrc);
+
+    link.appendChild(image);
     return link;
 }

@@ -43,10 +43,6 @@ management.endpoints.web.exposure.include: refresh
 # In consumer, copy below (and overwrite any above as needed) into src/main/resources/application.yml
 # and enter project-specific information:
 #
-#  spring:
-#    jpa.properties.hibernate.default_schema: application
-#    security.oauth2.client.registration.github.client-id: x
-#
 #  objectStorage:
 #    imageBucket:
 #      name: images
@@ -72,6 +68,7 @@ management.endpoints.web.exposure.include: refresh
 #      url: x
 #      username: x
 #      password: x
+#    security.oauth2.client.registration.github.client-id: x
 #    security.oauth2.client.registration.github.client-secret: x
 #
 #  objectStorage:
