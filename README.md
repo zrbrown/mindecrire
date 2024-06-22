@@ -36,9 +36,9 @@ like typos.
 
 Update a blog post (here, `post-title`). Updates will appear on a blog post, latest first, in a box at the top.
 
-### `/page`
+### `/page-name`
 
-Display a static page. All static pages are listed on the left of the top navigation bar.
+Display a static page (here, `page-name`). All static pages are listed on the left of the top navigation bar.
 
 ### `/refresh`
 
