@@ -522,7 +522,7 @@ public class BlogControllerTest extends ControllerTest {
                                 .param("postTitle", "Edited Title")
                                 .param("postContent", "Edited content."))
                         .andExpect(status().isFound())
-                        .andExpect(view().name("redirect:/blog/" + todayPost.getUrlName()));
+                        .andExpect(view().name("redirect:/blog/post/" + todayPost.getUrlName()));
 
                 Post post = postRepository.findById(todayPost.getId()).orElseThrow();
                 assertEquals(todayPost.getUrlName(), post.getUrlName());
@@ -548,7 +548,7 @@ public class BlogControllerTest extends ControllerTest {
                                 .param("postContent", "Edited content.")
                                 .param("addedTags", "food", "games"))
                         .andExpect(status().isFound())
-                        .andExpect(view().name("redirect:/blog/" + todayPost.getUrlName()));
+                        .andExpect(view().name("redirect:/blog/post/" + todayPost.getUrlName()));
 
                 Post post = postRepository.findById(todayPost.getId()).orElseThrow();
                 assertEquals(todayPost.getUrlName(), post.getUrlName());
@@ -610,7 +610,7 @@ public class BlogControllerTest extends ControllerTest {
                                 .param("postTitle", "New Test Post!")
                                 .param("postContent", "Stuff about stuff."))
                         .andExpect(status().isFound())
-                        .andExpect(view().name("redirect:/blog/not-real"));
+                        .andExpect(view().name("redirect:/blog/post/not-real"));
             }
         }
     }
@@ -755,7 +755,7 @@ public class BlogControllerTest extends ControllerTest {
                                 .with(csrf())
                                 .param("postContent", "This is an update to the post!"))
                         .andExpect(status().isFound())
-                        .andExpect(view().name("redirect:/blog/" + todayPost.getUrlName()));
+                        .andExpect(view().name("redirect:/blog/post/" + todayPost.getUrlName()));
 
                 List<PostUpdate> updates = postUpdateRepository.findAllByPost(todayPost, Sort.by(Sort.Direction.ASC, "updatedDateTime"));
                 assertEquals(1, updates.size());

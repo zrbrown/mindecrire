@@ -43,8 +43,10 @@ Display a static page. All static pages are listed on the left of the top naviga
 ### `/refresh`
 
 Display a page with a Refresh link that will refresh the Spring context (All this does is call `/actuator/refresh`).
-This is useful when the configuration needs to be updated without restarting the server. This can be useful when doing
-things like adding a new static page or adding users and changing permissions.
+This is useful when TLS/SSL certificates need to be manually reloaded or when doing things like adding a new static page
+or adding users and changing permissions (static pages are permissions are included in the refresh scope). When running
+locally, don't forget that these files need to be updated in the `target/classes` directory. Updating templates will
+take effect instantly without refreshing, so take care if updating templates.
 
 ## How to build
 
