@@ -478,3 +478,8 @@ docker run \
 - Mounting the `static` directory isn't necessary, but if done this way (by cloning your site's git repository
 to your production environment) the static content can be updated on the fly without restarting the server.
 - TLS information will be stored in `/etc/mindecrire/ssl` in this example.
+
+#### Directory permissions
+
+By default, `/etc/mindecrire/` is used to store configuration files. You may need to adjust directory permissions using
+`chmod` so that the user running the server has write permission to this directory.
