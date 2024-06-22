@@ -18,6 +18,7 @@ import software.amazon.awssdk.core.SdkRequest;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.http.SdkHttpResponse;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
@@ -64,8 +65,9 @@ public class ImageControllerTest extends ControllerTest {
             ioExceptionFile = spy(new MockMultipartFile("files", "hello6.txt", "image/tiff", Files.readAllBytes(Paths.get("src","test","resources","images","test-img.tiff"))));
             lenient().doThrow(new IOException()).when(ioExceptionFile).getInputStream();
 
-            try (var realClient = S3Client.create()) {
+            try (var realClient = S3Client.builder().region(Region.of("us-west-2")).build()) {
                 when(s3Client.utilities()).thenReturn(realClient.utilities());
+                when(s3Client.serviceClientConfiguration()).thenReturn(realClient.serviceClientConfiguration());
             }
         }
 
