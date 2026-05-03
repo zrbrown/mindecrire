@@ -443,7 +443,7 @@ Run with VM argument `-Dspring.config.name=mindecrire,application,local,local-se
 For portability, using a `Dockerfile` is recommended:
 
 ```dockerfile
-FROM maven:3.9.15-eclipse-temurin-11-alpine
+FROM maven:3.9.15-eclipse-temurin-25-alpine
 ARG BUILDSRC=/buildsrc
 COPY ./ ${BUILDSRC}
 WORKDIR ${BUILDSRC}
