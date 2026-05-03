@@ -24,19 +24,16 @@ public class UserAuthorizationPermissionEvaluator implements PermissionEvaluator
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        var loginAttribute = ((OAuth2AuthenticatedPrincipal) authentication.getPrincipal()).getAttribute("login");
-        if (!(loginAttribute instanceof String)) {
+        if (!(authentication.getPrincipal() instanceof OAuth2AuthenticatedPrincipal oauth2) ||
+                !(oauth2.getAttribute("login") instanceof String username) ||
+                !(permission instanceof Permission perm)) {
             return false;
         }
-        String username = (String) loginAttribute;
 
-        boolean hasPermission = hasPermission(username, (Permission) permission);
-
-        if (targetDomainObject instanceof String) {
-            hasPermission = hasPermission && ownsPost((String) targetDomainObject, username);
-        }
-
-        return hasPermission;
+        return hasPermission(username, perm) && switch (targetDomainObject) {
+            case String post -> ownsPost(post, username);
+            case null, default -> true;
+        };
     }
 
     private boolean hasPermission(String username, Permission permission) {
@@ -47,7 +44,7 @@ public class UserAuthorizationPermissionEvaluator implements PermissionEvaluator
 
     private boolean ownsPost(String postUrlName, String username) {
         return postService.getPostByUrlName(postUrlName).map(target ->
-                target.getAuthorDetails().getAuthor().equals(username))
+                        target.getAuthorDetails().getAuthor().equals(username))
                 .orElse(false);
     }
 

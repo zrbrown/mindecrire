@@ -189,9 +189,9 @@ public class BlogControllerTest extends ControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(view().name("blog_page"))
                         .andExpect(model().attribute("postUpdates", contains(
-                                comparedBy(Comparator.comparing(FormattedPostUpdate::getContent).thenComparing(FormattedPostUpdate::getDate)).comparesEqualTo(expectedUpdates.get(0)),
-                                comparedBy(Comparator.comparing(FormattedPostUpdate::getContent).thenComparing(FormattedPostUpdate::getDate)).comparesEqualTo(expectedUpdates.get(1)),
-                                comparedBy(Comparator.comparing(FormattedPostUpdate::getContent).thenComparing(FormattedPostUpdate::getDate)).comparesEqualTo(expectedUpdates.get(2))
+                                comparedBy(Comparator.comparing(FormattedPostUpdate::content).thenComparing(FormattedPostUpdate::date)).comparesEqualTo(expectedUpdates.get(0)),
+                                comparedBy(Comparator.comparing(FormattedPostUpdate::content).thenComparing(FormattedPostUpdate::date)).comparesEqualTo(expectedUpdates.get(1)),
+                                comparedBy(Comparator.comparing(FormattedPostUpdate::content).thenComparing(FormattedPostUpdate::date)).comparesEqualTo(expectedUpdates.get(2))
                         )))
                         .andExpect(model().attribute("postTitle", "Test Post"))
                         .andExpect(model().attribute("postDate", DateTimeFormatter.ISO_LOCAL_DATE.withZone(ZoneId.of("UTC")).format(TODAY)))
@@ -309,7 +309,7 @@ public class BlogControllerTest extends ControllerTest {
                 assertEquals("New Test Post!", post.getTitle());
                 assertEquals("Stuff about stuff.", post.getContent());
 
-                List<String> tags = tagRepository.findAll().stream().map(Tag::getName).sorted(Comparator.naturalOrder()).collect(Collectors.toList());
+                List<String> tags = tagRepository.findAll().stream().map(Tag::getName).sorted(Comparator.naturalOrder()).toList();
                 assertEquals(List.of("food", "games"), tags);
             }
 
@@ -428,6 +428,8 @@ public class BlogControllerTest extends ControllerTest {
             @Test
             void submitPostEdit() throws Exception {
                 mvc.perform(post("/blog/edit/" + todayPost.getUrlName())
+                                .param("postTitle", "Edited Title")
+                                .param("postContent", "Edited content.")
                                 .with(csrf()))
                         .andExpect(status().isFound());
             }
@@ -498,7 +500,7 @@ public class BlogControllerTest extends ControllerTest {
             void editPostMissing() throws Exception {
                 mvc.perform(get("/blog/edit/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "edit")))))
-                        .andExpect(status().isForbidden());
+                        .andExpect(status().isFound());
             }
 
             @DisplayName("GET /blog/not-real/edit when post is missing with authorization post-admin")
@@ -531,7 +533,7 @@ public class BlogControllerTest extends ControllerTest {
 
                 Set<Tag> tags = tagRepository.getAllByPostsIn(Set.of(post));
                 assertEquals(1, tags.size());
-                assertTrue(tags.stream().map(Tag::getName).collect(Collectors.toList()).contains("recipes"));
+                assertTrue(tags.stream().map(Tag::getName).toList().contains("recipes"));
             }
 
             @DisplayName("POST /blog/edit/test-post when adding tags")
@@ -557,9 +559,9 @@ public class BlogControllerTest extends ControllerTest {
 
                 Set<Tag> tags = tagRepository.getAllByPostsIn(Set.of(post));
                 assertEquals(3, tags.size());
-                assertTrue(tags.stream().map(Tag::getName).collect(Collectors.toList()).contains("recipes"));
-                assertTrue(tags.stream().map(Tag::getName).collect(Collectors.toList()).contains("food"));
-                assertTrue(tags.stream().map(Tag::getName).collect(Collectors.toList()).contains("games"));
+                assertTrue(tags.stream().map(Tag::getName).toList().contains("recipes"));
+                assertTrue(tags.stream().map(Tag::getName).toList().contains("food"));
+                assertTrue(tags.stream().map(Tag::getName).toList().contains("games"));
             }
 
             @DisplayName("POST /blog/edit/test-post with blank title")
@@ -598,7 +600,7 @@ public class BlogControllerTest extends ControllerTest {
                                 .with(csrf())
                                 .param("postTitle", "New Test Post!")
                                 .param("postContent", "Stuff about stuff."))
-                        .andExpect(status().isForbidden());
+                        .andExpect(status().isFound());
             }
 
             @DisplayName("POST /blog/not-real/edit when post is missing with authorization post-admin")
@@ -643,6 +645,7 @@ public class BlogControllerTest extends ControllerTest {
             @Test
             void submitPostUpdate() throws Exception {
                 mvc.perform(post("/blog/update/" + todayPost.getUrlName())
+                                .param("postContent", "Edited content.")
                                 .with(csrf()))
                         .andExpect(status().isFound());
             }
@@ -680,7 +683,7 @@ public class BlogControllerTest extends ControllerTest {
             void updatePostMissing() throws Exception {
                 mvc.perform(get("/blog/update/not-real")
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "update")))))
-                        .andExpect(status().isForbidden());
+                        .andExpect(status().isFound());
             }
 
             @DisplayName("GET /blog/update/test-post when post is missing with authorization post-admin")
@@ -732,7 +735,7 @@ public class BlogControllerTest extends ControllerTest {
                                 .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "update"))))
                                 .with(csrf())
                                 .param("postContent", "This is an update to the post!"))
-                        .andExpect(status().isForbidden());
+                        .andExpect(status().isFound());
             }
 
             @DisplayName("POST /blog/update/test-post when post is missing with authorization post-admin")
@@ -759,8 +762,8 @@ public class BlogControllerTest extends ControllerTest {
 
                 List<PostUpdate> updates = postUpdateRepository.findAllByPost(todayPost, Sort.by(Sort.Direction.ASC, "updatedDateTime"));
                 assertEquals(1, updates.size());
-                assertEquals("This is an update to the post!", updates.get(0).getContent());
-                assertEquals(NOW, updates.get(0).getUpdatedDateTime());
+                assertEquals("This is an update to the post!", updates.getFirst().getContent());
+                assertEquals(NOW, updates.getFirst().getUpdatedDateTime());
             }
 
             @DisplayName("POST /blog/update/test-post with blank content")

@@ -1,7 +1,8 @@
 package net.eightlives.mindecrire.dao.model;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class Post {
     @Column
     private LocalDateTime createdDateTime;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "posts_to_tags",
             joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))

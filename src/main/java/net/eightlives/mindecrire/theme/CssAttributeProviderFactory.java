@@ -13,54 +13,31 @@ public class CssAttributeProviderFactory implements AttributeProviderFactory {
 
     @Override
     public AttributeProvider create(AttributeProviderContext attributeProviderContext) {
-        return (node, tagName, attributes) -> {
-            Consumer<String> setClass = className -> attributes.put("class", className);
-
-            if (node instanceof BlockQuote) {
-                setClass.accept("mindecrire-md-block-quote");
-            } else if (node instanceof CustomBlock) {
-                setClass.accept("mindecrire-md-custom-block");
-            } else if (node instanceof Document) {
-                setClass.accept("mindecrire-md-document");
-            } else if (node instanceof FencedCodeBlock) {
-                setClass.accept("mindecrire-md-fenced-code-block");
-            } else if (node instanceof Heading) {
-                setClass.accept("mindecrire-md-heading");
-            } else if (node instanceof HtmlBlock) {
-                setClass.accept("mindecrire-md-html-block");
-            } else if (node instanceof IndentedCodeBlock) {
-                setClass.accept("mindecrire-md-indented-code-block");
-            } else if (node instanceof BulletList) {
-                setClass.accept("mindecrire-md-bullet-list");
-            } else if (node instanceof OrderedList) {
-                setClass.accept("mindecrire-md-ordered-list");
-            } else if (node instanceof ListItem) {
-                setClass.accept("mindecrire-md-list-item");
-            } else if (node instanceof Paragraph) {
-                setClass.accept("mindecrire-md-paragraph");
-            } else if (node instanceof ThematicBreak) {
-                setClass.accept("mindecrire-md-thematic-break");
-            } else if (node instanceof Code) {
-                setClass.accept("mindecrire-md-code");
-            } else if (node instanceof CustomNode) {
-                setClass.accept("mindecrire-md-custom-node");
-            } else if (node instanceof Emphasis) {
-                setClass.accept("mindecrire-md-emphasis");
-            } else if (node instanceof HardLineBreak) {
-                setClass.accept("mindecrire-md-hard-line-break");
-            } else if (node instanceof HtmlInline) {
-                setClass.accept("mindecrire-md-html-inline");
-            } else if (node instanceof Image) {
-                setClass.accept("mindecrire-md-image");
-            } else if (node instanceof Link) {
-                setClass.accept("mindecrire-md-link");
-            } else if (node instanceof SoftLineBreak) {
-                setClass.accept("mindecrire-md-soft-line-break");
-            } else if (node instanceof StrongEmphasis) {
-                setClass.accept("mindecrire-md-strong-emphasis");
-            } else if (node instanceof Text) {
-                setClass.accept("mindecrire-md-text");
-            }
-        };
+        return (node, _, attributes) -> attributes.put("class", switch (node) {
+            case BlockQuote _ -> "mindecrire-md-block-quote";
+            case CustomBlock _ -> "mindecrire-md-custom-block";
+            case Document _ -> "mindecrire-md-document";
+            case Heading _ -> "mindecrire-md-heading";
+            case HtmlBlock _ -> "mindecrire-md-html-block";
+            case FencedCodeBlock _ -> "mindecrire-md-fenced-code-block";
+            case IndentedCodeBlock _ -> "mindecrire-md-indented-code-block";
+            case BulletList _ -> "mindecrire-md-bullet-list";
+            case OrderedList _ -> "mindecrire-md-ordered-list";
+            case ListItem _ -> "mindecrire-md-list-item";
+            case Paragraph _ -> "mindecrire-md-paragraph";
+            case ThematicBreak _ -> "mindecrire-md-thematic-break";
+            case Code _ -> "mindecrire-md-code";
+            case CustomNode _ -> "mindecrire-md-custom-node";
+            case Emphasis _ -> "mindecrire-md-emphasis";
+            case StrongEmphasis _ -> "mindecrire-md-strong-emphasis";
+            case SoftLineBreak _ -> "mindecrire-md-soft-line-break";
+            case HardLineBreak _ -> "mindecrire-md-hard-line-break";
+            case HtmlInline _ -> "mindecrire-md-html-inline";
+            case Image _ -> "mindecrire-md-image";
+            case Link _ -> "mindecrire-md-link";
+            case LinkReferenceDefinition _ -> "mindecrire-md-link-reference-definition";
+            case Text _ -> "mindecrire-md-text";
+            default -> throw new IllegalStateException(node.getClass().getName() + " does not have a css class");
+        });
     }
 }

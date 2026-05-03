@@ -1,5 +1,7 @@
 package net.eightlives.mindecrire.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import net.eightlives.mindecrire.config.custom.BaseConfig;
 import net.eightlives.mindecrire.dao.model.Post;
 import net.eightlives.mindecrire.exception.DuplicatePostUrlNameException;
@@ -21,8 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -56,15 +56,11 @@ public class BlogController {
     }
 
     @GetMapping("/post/{postUrlName}")
-    public String blog(@PathVariable String postUrlName, Model model) {
-        Optional<Post> requestedPost = postService.getPostByUrlName(postUrlName);
-
-        if (requestedPost.isPresent()) {
-            applyPostToModel(requestedPost.get(), model);
+    public String blog(@PathVariable("postUrlName") String postUrlName, Model model) {
+        return postService.getPostByUrlName(postUrlName).map(post -> {
+            applyPostToModel(post, model);
             return "blog_page";
-        }
-
-        return "redirect:/blog";
+        }).orElse("redirect:/blog");
     }
 
     private void applyPostToModel(Post requestedPost, Model model) {
@@ -101,7 +97,7 @@ public class BlogController {
 
     @GetMapping("/edit/{postUrlName}")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_EDIT)")
-    public String editPost(@PathVariable String postUrlName, Model model) {
+    public String editPost(@PathVariable("postUrlName") String postUrlName, Model model) {
         return postService.getPostByUrlName(postUrlName).map(post -> {
             model.addAttribute("postTitle", post.getTitle());
             model.addAttribute("postContent", post.getContent());
@@ -117,16 +113,16 @@ public class BlogController {
 
     @PostMapping("/edit/{postUrlName}")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_EDIT)")
-    public String submitPostEdit(@PathVariable String postUrlName, @Valid FormBlogPost blogPost) {
+    public String submitPostEdit(@PathVariable("postUrlName") String postUrlName, @Valid FormBlogPost blogPost) {
         postService.getPostByUrlName(postUrlName).ifPresent(post -> postService.editPost(
-                post, blogPost.getPostTitle(), blogPost.getPostContent(), blogPost.getAddedTags()));
+                post, blogPost.postTitle(), blogPost.postContent(), blogPost.addedTags()));
 
         return "redirect:/blog/post/" + postUrlName;
     }
 
     @GetMapping("/update/{postUrlName}")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_UPDATE)")
-    public String updatePost(@PathVariable String postUrlName, Model model) {
+    public String updatePost(@PathVariable("postUrlName") String postUrlName, Model model) {
         return postService.getPostByUrlName(postUrlName).map(post -> {
             Set<String> tags = tagService.getTags(post);
 
@@ -140,10 +136,10 @@ public class BlogController {
 
     @PostMapping("/update/{postUrlName}")
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADMIN) || hasPermission(#postUrlName, T(net.eightlives.mindecrire.security.Permission).POST_UPDATE)")
-    public String submitPostUpdate(@PathVariable String postUrlName, @Valid FormBlogPostUpdate blogPostUpdate) {
+    public String submitPostUpdate(@PathVariable("postUrlName") String postUrlName, @Valid FormBlogPostUpdate blogPostUpdate) {
         return postService.getPostByUrlName(postUrlName)
                 .map(post -> {
-                    postUpdateService.addPostUpdate(post, blogPostUpdate.getPostContent(), LocalDateTime.now(clock));
+                    postUpdateService.addPostUpdate(post, blogPostUpdate.postContent(), LocalDateTime.now(clock));
                     return "redirect:/blog/post/" + postUrlName;
                 }).orElse("redirect:/blog/" + postUrlName);
     }
@@ -161,12 +157,12 @@ public class BlogController {
     @PreAuthorize("hasPermission(null, T(net.eightlives.mindecrire.security.Permission).POST_ADD)")
     public String submitPost(@Valid FormBlogPost blogPost, OAuth2AuthenticationToken authentication, Model model, HttpServletResponse response) {
         try {
-            postService.addPost(blogPost.getPostTitle(), blogPost.getPostContent(), LocalDateTime.now(clock),
-                    blogPost.getAddedTags(), authentication);
+            postService.addPost(blogPost.postTitle(), blogPost.postContent(), LocalDateTime.now(clock),
+                    blogPost.addedTags(), authentication);
         } catch (DuplicatePostUrlNameException e) {
-            model.addAttribute("postTitle", blogPost.getPostTitle());
-            model.addAttribute("postContent", blogPost.getPostContent());
-            model.addAttribute("tags", blogPost.getAddedTags());
+            model.addAttribute("postTitle", blogPost.postTitle());
+            model.addAttribute("postContent", blogPost.postContent());
+            model.addAttribute("tags", blogPost.addedTags());
             model.addAttribute("resubmit", true);
             model.addAttribute("submitPath", "/blog/add");
             model.addAttribute("ajaxBaseUrl", config.getUrl());

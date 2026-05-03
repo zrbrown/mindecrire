@@ -23,17 +23,18 @@ public class AuthorDetailsService {
     public AuthorDetails getOrCreateAuthorDetails(OAuth2AuthenticationToken authentication) {
         String author = authentication.getAuthorizedClientRegistrationId() + "-" + authentication.getName();
         return authorDetailsRepository.findByAuthor(author)
-                .orElseGet(() -> {
-                    String displayName = authentication.getPrincipal().getAttribute("name");
-                    if (displayName == null) {
-                        LOG.error("OAuth authentication is missing the 'name' attribute. Using username instead for author {}", author);
-                        displayName = authentication.getPrincipal().getAttribute("login");
-                        if (displayName == null) {
-                            throw new IllegalStateException("OAuth authentication is missing the 'login' attribute. This is either a bug from a standard provider, or your custom provider does not provide this attribute.");
-                        }
-                    }
-
-                    return authorDetailsRepository.save(new AuthorDetails(UUID.randomUUID(), author, displayName));
-                });
+                .orElseGet(() -> authorDetailsRepository.save(new AuthorDetails(UUID.randomUUID(), author,
+                        switch(authentication.getPrincipal().getAttribute("name")) {
+                            case null -> {
+                                LOG.error("OAuth authentication is missing the 'name' attribute. Using username instead for author {}", author);
+                                yield switch(authentication.getPrincipal().getAttribute("login")) {
+                                    case null -> throw new IllegalStateException("OAuth authentication is missing the 'login' attribute. This is either a bug from a standard provider, or your custom provider does not provide this attribute.");
+                                    case String login -> login;
+                                    default -> throw new IllegalStateException("OAuth authentication 'login' attribute is not a String. This is either a bug from a standard provider, or your custom provider does not provide this attribute in a String format.");
+                                };
+                            }
+                            case String name -> name;
+                            default -> throw new IllegalStateException("OAuth authentication 'name' attribute is not a String. This is either a bug from a standard provider, or your custom provider does not provide this attribute in a String format.");
+                        })));
     }
 }

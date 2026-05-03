@@ -47,16 +47,20 @@ public class StaticContentControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("static_content"))
                 .andExpect(model().attribute("title", "My Projects"))
-                .andExpect(model().attribute("content", "<h1 class=\"mindecrire-md-heading\">Projects</h1>\n" +
-                        "<h2 class=\"mindecrire-md-heading\">Cool Thing</h2>\n" +
-                        "<p class=\"mindecrire-md-paragraph\">This is a cool thing I made</p>\n"));
+                .andExpect(model().attribute("content", """
+                        <h1 class="mindecrire-md-heading">Projects</h1>
+                        <h2 class="mindecrire-md-heading">Cool Thing</h2>
+                        <p class="mindecrire-md-paragraph">This is a cool thing I made</p>
+                        """));
 
         mvc.perform(get("/about"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("static_content"))
                 .andExpect(model().attribute("title", "About"))
-                .andExpect(model().attribute("content", "<h1 class=\"mindecrire-md-heading\">About</h1>\n" +
-                        "<p class=\"mindecrire-md-paragraph\"><em class=\"mindecrire-md-emphasis\">I make things</em></p>\n" +
-                        "<p class=\"mindecrire-md-paragraph\"><strong class=\"mindecrire-md-strong-emphasis\">Lots of things</strong></p>\n"));
+                .andExpect(model().attribute("content", """
+                        <h1 class="mindecrire-md-heading">About</h1>
+                        <p class="mindecrire-md-paragraph"><em class="mindecrire-md-emphasis">I make things</em></p>
+                        <p class="mindecrire-md-paragraph"><strong class="mindecrire-md-strong-emphasis">Lots of things</strong></p>
+                        """));
     }
 }

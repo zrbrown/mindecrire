@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class PostUpdateService {
@@ -41,7 +40,7 @@ public class PostUpdateService {
                     return new FormattedPostUpdate(
                             renderedContent,
                             postUpdate.getUpdatedDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                }).collect(Collectors.toList());
+                }).toList();
     }
 
     public void addPostUpdate(Post post, String content, LocalDateTime updatedDateTime) {

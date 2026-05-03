@@ -1,6 +1,7 @@
 package net.eightlives.mindecrire.dao.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public class Tag {
     @Column
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "posts_to_tags",
             joinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"))

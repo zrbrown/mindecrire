@@ -1,26 +1,29 @@
 package net.eightlives.mindecrire.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity
+public class SecurityConfig {
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/blog/add").authenticated()
-                .antMatchers("/blog/edit/**").authenticated()
-                .antMatchers("/blog/update/**").authenticated()
-                .antMatchers("/content/image/**").authenticated()
-                .antMatchers("/actuator/**").authenticated()
-                .antMatchers("/config/**").authenticated()
-                .antMatchers("/refresh").authenticated()
-                .anyRequest().permitAll()
-                .and()
-                .oauth2Login();
-        http.csrf()
-                .ignoringAntMatchers("/actuator/**");
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(authc -> authc
+                        .requestMatchers("/blog/add").authenticated()
+                        .requestMatchers("/blog/edit/*").authenticated()
+                        .requestMatchers("/blog/update/*").authenticated()
+                        .requestMatchers("/content/image/*").authenticated()
+                        .requestMatchers("/actuator/*").authenticated()
+                        .requestMatchers("/config/*").authenticated()
+                        .anyRequest().permitAll())
+                .oauth2Login(Customizer.withDefaults())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/actuator/*"));
+
+        return http.build();
     }
 }

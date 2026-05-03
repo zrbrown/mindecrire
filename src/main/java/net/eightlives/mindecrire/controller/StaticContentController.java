@@ -37,7 +37,7 @@ public class StaticContentController {
     }
 
     @GetMapping("/{markdown:^(?!favicon\\.ico$).*}")
-    public String content(@PathVariable String markdown, Model model) {
+    public String content(@PathVariable("markdown") String markdown, Model model) {
         if (staticContentConfig.getMarkdownToName() != null &&
                 staticContentConfig.getMarkdownToName().containsKey(markdown)) {
             try {

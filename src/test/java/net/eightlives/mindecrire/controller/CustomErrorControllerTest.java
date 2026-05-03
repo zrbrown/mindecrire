@@ -1,9 +1,8 @@
 package net.eightlives.mindecrire.controller;
 
+import jakarta.servlet.RequestDispatcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import javax.servlet.RequestDispatcher;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;

@@ -1,14 +1,19 @@
 server:
   port: 443
-  ssl:
-    enabled: true
-    key-store: src/test/resources/existing_keystore.p12
-    key-store-password:
-    keyStoreType: PKCS12
-    keyAlias: friendlyssl
-  tomcat.mbeanregistry.enabled: true
+  ssl.bundle: mindecrire
+  error.path: /error
 
 spring:
+  ssl.bundle:
+    watch.file.quiet-period: 1m
+    jks:
+      mindecrire:
+        reload-on-update: true
+        key.alias: friendlyssl
+        keystore:
+          location: src/test/resources/existing_keystore.p12
+          password:
+          type: PKCS12
   freemarker:
     template-loader-path: classpath:/mindecrire_templates,classpath:/templates
     suffix: .ftlh
@@ -24,10 +29,6 @@ spring:
   security.oauth2.client.registration:
     github.provider: github
     github.client-id: x
-  profiles.active: native
-  cloud.config.server:
-    prefix: config
-    git.uri: file://etc/mindecrire/config/config-repo
 
 friendly-ssl:
   certificate-key-alias: mindecrire

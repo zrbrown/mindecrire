@@ -43,10 +43,11 @@ Display a static page (here, `page-name`). All static pages are listed on the le
 ### `/refresh`
 
 Display a page with a Refresh link that will refresh the Spring context (All this does is call `/actuator/refresh`).
-This is useful when TLS/SSL certificates need to be manually reloaded or when doing things like adding a new static page
-or adding users and changing permissions (static pages are permissions are included in the refresh scope). When running
-locally, don't forget that these files need to be updated in the `target/classes` directory. Updating templates will
-take effect instantly without refreshing, so take care if updating templates.
+This is useful when adding a new static page (adding to `staticContent.markdownToName`) or adding users and changing
+permissions (adding to `userAuthorization.userPermissions`) since configuration will be reloaded as a part of the
+context. When running locally, don't forget that these files, if they are located in `src`, need to be updated in the
+`target/classes` directory. Updating templates and static page content will take effect instantly without refreshing,
+so take care when updating these.
 
 ## How to build
 
@@ -74,8 +75,8 @@ Minimal example using PostgreSQL and Flyway:
     <url>https://my-website.com</url>
 
     <properties>
-        <maven.compiler.source>12</maven.compiler.source>
-        <maven.compiler.target>12</maven.compiler.target>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -430,7 +431,7 @@ spring:
 Ensure a local PostgreSQL instance and S3 instance are running before starting the server (Requires Docker and [awslocal](https://github.com/localstack/awscli-local)):
 
 ```shell
-docker run --detach --rm -p 4566:4566 --name locals3 localstack/localstack:s3-latest
+docker run --detach --rm -e LOCALSTACK_AUTH_TOKEN=your-auth-token -p 4566:4566 --name locals3 localstack/localstack:latest
 awslocal s3api create-bucket --bucket images --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
 docker run --detach --rm -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 --name localdb postgres:10.11
 ```
@@ -442,13 +443,13 @@ Run with VM argument `-Dspring.config.name=mindecrire,application,local,local-se
 For portability, using a `Dockerfile` is recommended:
 
 ```dockerfile
-FROM maven:3.6.2-jdk-12
+FROM maven:3.9.15-eclipse-temurin-11-alpine
 ARG BUILDSRC=/buildsrc
 COPY ./ ${BUILDSRC}
 WORKDIR ${BUILDSRC}
 RUN mvn clean package
 
-FROM openjdk:12-alpine
+FROM eclipse-temurin:22.0.2_9-jdk-alpine
 ARG DEPENDENCY=/buildsrc/target/dependency
 COPY --from=0 ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=0 ${DEPENDENCY}/META-INF /app/META-INF

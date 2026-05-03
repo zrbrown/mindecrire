@@ -18,7 +18,6 @@ import net.eightlives.mindecrire.service.PostUpdateService;
 import net.eightlives.mindecrire.service.TagService;
 import net.eightlives.mindecrire.theme.CssAttributeProviderFactory;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.cloud.config.server.EnableConfigServer;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
@@ -52,7 +51,6 @@ import java.lang.annotation.*;
 })
 @EntityScan(basePackages = {"net.eightlives.mindecrire.dao.model"})
 @EnableJpaRepositories(basePackages = {"net.eightlives.mindecrire.dao"})
-@EnableConfigServer
 @FriendlySSL
 public @interface MindecrireApp {
 }

@@ -1,17 +1,6 @@
 package net.eightlives.mindecrire.model;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
-public class FormBlogPostUpdate {
-
-    @NotBlank
-    private String postContent;
-
-    public String getPostContent() {
-        return postContent;
-    }
-
-    public void setPostContent(String postContent) {
-        this.postContent = postContent;
-    }
+public record FormBlogPostUpdate(@NotBlank String postContent) {
 }

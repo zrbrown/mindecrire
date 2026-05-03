@@ -1,5 +1,6 @@
 package net.eightlives.mindecrire.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import net.eightlives.mindecrire.config.custom.ImageBucketConfig;
 import net.eightlives.mindecrire.model.ImageUploadResponse;
 import org.slf4j.Logger;
@@ -14,7 +15,6 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -38,8 +38,6 @@ public class ImageController {
 
     @PostMapping("/add")
     public ImageUploadResponse addImages(@RequestParam("files") List<MultipartFile> files) {
-        HeadBucketResponse bucketResponse;
-        Exception bucketException = null;
         try {
             uploadClient.headBucket(req -> req.bucket(imageBucketConfig.getName()));
         } catch (NoSuchBucketException e) {
@@ -55,7 +53,7 @@ public class ImageController {
                         .bucket(imageBucketConfig.getName())
                         .key(file.getOriginalFilename()));
 
-                uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(),
+                uploadResponse.failed().add(new ImageUploadResult(file.getOriginalFilename(),
                         "File " + file.getOriginalFilename() + " already exists"));
             } catch (NoSuchKeyException e) {
                 try {
@@ -66,14 +64,14 @@ public class ImageController {
                                     .acl(ObjectCannedACL.PUBLIC_READ),
                             RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
-                    uploadResponse.getSuccessful().add(new ImageUploadResult(file.getOriginalFilename(),
+                    uploadResponse.successful().add(new ImageUploadResult(file.getOriginalFilename(),
                             uploadClient.utilities().getUrl(r -> r.bucket(imageBucketConfig.getName()).key(file.getOriginalFilename())).toExternalForm()));
                 } catch (IOException ioException) {
                     LOG.error("Error reading file to upload", ioException);
-                    uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(),
+                    uploadResponse.failed().add(new ImageUploadResult(file.getOriginalFilename(),
                             "File " + file.getOriginalFilename() + " could not be read. Try Again."));
                 } catch (SdkException sdkException) {
-                    uploadResponse.getFailed().add(new ImageUploadResult(file.getOriginalFilename(), sdkException.getMessage()));
+                    uploadResponse.failed().add(new ImageUploadResult(file.getOriginalFilename(), sdkException.getMessage()));
                 }
             }
         }
@@ -82,7 +80,7 @@ public class ImageController {
     }
 
     @DeleteMapping("/delete/{imageKey}")
-    public String deleteImage(@PathVariable String imageKey, HttpServletResponse response) {
+    public String deleteImage(@PathVariable("imageKey") String imageKey, HttpServletResponse response) {
         DeleteObjectResponse deleteObjectResponse = uploadClient.deleteObject(req -> req
                 .bucket(imageBucketConfig.getName())
                 .key(imageKey));

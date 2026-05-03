@@ -6,8 +6,8 @@
     <#if postUpdates??>
         <#list postUpdates as postUpdate>
             <div class="post-update-container">
-                <span class="post-update-date">Updated ${postUpdate.date}</span>
-                <div>${postUpdate.content?no_esc}</div>
+                <span class="post-update-date">Updated ${postUpdate.date()}</span>
+                <div>${postUpdate.content()?no_esc}</div>
             </div>
         </#list>
     </#if>

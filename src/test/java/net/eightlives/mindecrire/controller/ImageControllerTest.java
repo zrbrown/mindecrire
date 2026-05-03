@@ -226,7 +226,7 @@ public class ImageControllerTest extends ControllerTest {
                             .with(authentication(getOauthAuthenticationFor(createOAuth2User("zrbrown", "Zack Brown", "all-perms"))))
                             .with(csrf()))
                     .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.TEXT_PLAIN))
+                    .andExpect(content().contentType(MediaType.TEXT_PLAIN_VALUE + ";charset=UTF-8"))
                     .andExpect(content().encoding(StandardCharsets.UTF_8.name()))
                     .andExpect(content().string(RequestCharged.REQUESTER.toString()));
         }
